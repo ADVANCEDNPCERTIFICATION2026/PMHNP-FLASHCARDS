@@ -1,0 +1,717 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PMHNP Flashcards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+:root{
+  --bg:#F3F5F8; --surface:#FFFFFF; --ink:#16233A; --muted:#566275; --line:#D6DCE5;
+  --navy:#1F3864; --teal:#00727A; --teal-soft:#E3F2F2; --gold:#B7791F; --gold-soft:#FBF1DF;
+  --ok:#1E7A46; --ok-soft:#E4F4EA; --bad:#B42318; --bad-soft:#FCE9E7;
+  --back:#F7FBFB; --rule:#EEF1F5;
+  --display:"Newsreader", Georgia, "Times New Roman", serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1624; --surface:#172133; --ink:#E7ECF4; --muted:#A3AEC0; --line:#2C3A52;
+  --navy:#9DB8E8; --teal:#5CC2C9; --teal-soft:#123437; --gold:#E3B261; --gold-soft:#3A2C14;
+  --ok:#6FD39A; --ok-soft:#14321F; --bad:#FF8A7E; --bad-soft:#3C1A17; --back:#132A31; --rule:#1C283C; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1624; --surface:#172133; --ink:#E7ECF4; --muted:#A3AEC0; --line:#2C3A52;
+  --navy:#9DB8E8; --teal:#5CC2C9; --teal-soft:#123437; --gold:#E3B261; --gold-soft:#3A2C14;
+  --ok:#6FD39A; --ok-soft:#14321F; --bad:#FF8A7E; --bad-soft:#3C1A17; --back:#132A31; --rule:#1C283C; color-scheme:dark}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;margin:0}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:22px 40px;display:grid;gap:18px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;border-bottom:2px solid var(--gold);padding-bottom:10px}
+h1{font-family:var(--display);font-weight:700;font-size:1.9rem;line-height:1.15;color:var(--navy);margin:0;text-wrap:balance}
+.by{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;line-height:1.5}.by .au a{color:inherit}.by .au{text-transform:none;letter-spacing:.02em;font-style:italic;font-weight:400}
+.sub{color:var(--muted);margin:0;font-size:.95rem}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+.modes{display:inline-flex;border:1.5px solid var(--line);border-radius:999px;padding:3px;background:var(--surface)}
+.modes button{font:inherit;font-weight:700;font-size:.9rem;border:0;background:none;color:var(--muted);padding:6px 16px;border-radius:999px;cursor:pointer}
+.modes button[aria-pressed="true"]{background:var(--navy);color:var(--surface)}
+.mastery{font-size:.88rem;color:var(--muted);display:flex;align-items:center;gap:10px;font-variant-numeric:tabular-nums}
+.meter{width:120px;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.meter span{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+.decks{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}.decks label{font-weight:700;font-size:.9rem;color:var(--muted)}.decks select{font:inherit;flex:1 1 260px;min-width:0;max-width:100%;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}.decks .tog{display:inline-flex;gap:8px;align-items:center;font-weight:400;color:var(--ink);cursor:pointer}.decks .tog input{width:18px;height:18px;accent-color:var(--teal)}
+button:focus-visible,input:focus-visible,.card:focus-visible{outline:2.5px solid var(--gold);outline-offset:3px}
+.status{display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;font-size:.9rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.status b{color:var(--ink)}
+.prog{height:6px;border-radius:99px;background:var(--line);overflow:hidden}
+.prog span{display:block;height:100%;background:var(--teal);width:0;transition:width .3s}
+.stage{perspective:1400px}
+.card{position:relative;width:100%;min-height:300px;cursor:pointer;transform-style:preserve-3d;transition:transform .5s ease;display:grid}
+.card.flipped{transform:rotateY(180deg)}
+.face{grid-area:1/1;backface-visibility:hidden;-webkit-backface-visibility:hidden;border:1.5px solid var(--line);border-radius:14px;padding:22px 24px 18px;display:flex;flex-direction:column;gap:12px;min-width:0;box-shadow:0 10px 24px -18px rgba(16,30,60,.45)}
+.front{background:var(--surface);background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule) 31px 32px);background-position:0 70px}
+.back{background:var(--back);transform:rotateY(180deg)}
+.meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tag{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+.type{font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:6px;background:var(--gold-soft);color:var(--gold)}
+.cardno{margin-left:auto;font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.q{font-family:var(--display);font-weight:500;font-size:1.45rem;line-height:1.3;margin:auto 0;text-wrap:balance}
+.a{font-size:1.08rem;font-weight:700;margin:0}
+.pearl{margin:0;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px dashed var(--line);font-size:.95rem;color:var(--ink)}
+.pearl b{color:var(--gold)}
+.hint{font-size:.82rem;color:var(--muted);margin-top:auto}
+.controls{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center}
+.group{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:inherit;font-weight:700;font-size:.95rem;border-radius:10px;padding:9px 16px;border:1.5px solid var(--navy);background:var(--surface);color:var(--navy);cursor:pointer}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.solid{background:var(--navy);color:var(--surface)}
+.btn.again{border-color:var(--bad);color:var(--bad);background:var(--bad-soft)}
+.btn.next{background:var(--teal);border-color:var(--teal);color:var(--surface)}
+.btn.got{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.keys{font-size:.8rem;color:var(--muted);margin:0}
+kbd{font-family:var(--body);font-size:.75rem;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:0 5px;background:var(--surface)}
+.done{border:1.5px solid var(--line);background:var(--surface);border-radius:14px;padding:26px 22px;display:grid;gap:10px;justify-items:start}
+.done h2{font-family:var(--display);color:var(--navy);margin:0;font-size:1.5rem}
+.done p{margin:0;color:var(--muted)}
+.search{font:inherit;width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);color:var(--ink)}
+.list{display:grid;gap:8px}
+details{border:1.5px solid var(--line);border-radius:10px;background:var(--surface);padding:10px 14px}
+details[open]{background:var(--back)}
+summary{cursor:pointer;display:flex;gap:10px;align-items:baseline;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary .sq{flex:1;min-width:0;font-weight:700}
+summary .cid{font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums}
+summary .st{font-size:.72rem;color:var(--ok);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+details .body{display:grid;gap:8px;margin-top:8px}
+.empty{color:var(--muted)}
+.howto{border:1.5px solid var(--line);border-radius:12px;background:var(--surface);padding:12px 16px}
+.howto summary{cursor:pointer;font-weight:700;color:var(--navy);font-size:1rem;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.howto summary::-webkit-details-marker{display:none}
+.howto summary::after{content:"Show";font-size:.82rem;font-weight:700;color:var(--teal)}
+.howto[open] summary::after{content:"Hide"}
+.howto ol{margin:10px 0 4px;padding-left:22px;display:grid;gap:6px}
+.howto li{padding-left:2px}
+.howto p{margin:8px 0 0;font-size:.9rem;color:var(--muted)}
+footer{font-size:.78rem;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+@media (max-width:520px){h1{font-size:1.55rem}.q{font-size:1.25rem}.face{padding:18px 16px 14px}.controls{flex-direction:column-reverse;align-items:stretch}.controls .group{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:8px}.controls .btn{padding:10px 6px;font-size:.88rem}}
+@media (prefers-reduced-motion:reduce){.card,.prog span,.meter span{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>PMHNP Flashcards</h1><span class="by">Advanced NP Certification Review Services<br><span class="au">by Dr. Adekemi Akinlawon<br><a href="mailto:advancednpcertificationreview@gmail.com">advancednpcertificationreview@gmail.com</a> • <a href="tel:+12813729148">+1 (281) 372-9148</a></span></span></header>
+  <p class="sub" id="sub">ANCC PMHNP-BC must-know facts</p>
+
+  <details class="howto" id="howto" open>
+    <summary>How to use these flashcards</summary>
+    <ol>
+      <li><b>Pick a deck</b> from the Deck menu, or keep <b>All decks</b> to mix every topic.</li>
+      <li><b>Read the question</b> on the card and say your answer out loud before you look.</li>
+      <li><b>Flip the card</b> by tapping it, pressing <b>Show answer</b>, or pressing the Space bar.</li>
+      <li><b>Rate yourself and move on:</b> press <b>Got it ›</b> if you knew it, or <b>Review again ›</b> if you did not. Either button also records your answer and moves you to the next card. Read the <b>Pearl</b> on the back for the exam tip first.</li>
+      <li><b>Press Next ›</b> at any time to go to the next card. Press <b>‹ Previous card</b> to go back one card.</li>
+      <li>At the end of a round, choose <b>Study the ones I missed</b> to repeat only your weak cards.</li>
+      <li>Tick <b>Only cards I have not mastered</b> to skip cards you already know.</li>
+      <li>Use <b>Browse all</b> to see every card as a list and search by topic or keyword (for example, lithium, CIWA or DBT).</li>
+    </ol>
+    <p>On a phone, flip the card, then swipe right for Got it or left for Review again to go to the next card. On a computer: Space flips, → next card, ← previous card, 2 = Got it, 1 = Review again. Your progress is saved in this browser on this device only; clearing your browser data or using a different device starts fresh.</p>
+  </details>
+
+  <div class="bar">
+    <div class="modes" role="group" aria-label="Mode">
+      <button type="button" id="mStudy" aria-pressed="true">Study</button>
+      <button type="button" id="mBrowse" aria-pressed="false">Browse all</button>
+    </div>
+    <div class="mastery"><span id="mastTxt">0 mastered</span><div class="meter" aria-hidden="true"><span id="mastBar"></span></div></div>
+  </div>
+  <div class="decks"><label for="deckSel">Deck</label><select id="deckSel"></select><label class="tog" for="onlyNew"><input type="checkbox" id="onlyNew"> Only cards I have not mastered</label></div>
+
+  <section id="study">
+    <div style="display:grid;gap:10px">
+      <div class="status"><span id="pos"></span><span><b id="cGot">0</b> got it • <b id="cAgain">0</b> to review</span></div>
+      <div class="prog" aria-hidden="true"><span id="progBar"></span></div>
+      <div class="stage" id="stage">
+        <div class="card" id="card" tabindex="0" role="button" aria-label="Flashcard. Press Space to flip.">
+          <div class="face front">
+            <div class="meta"><span class="tag" id="fTag"></span><span class="type" id="fType"></span><span class="cardno" id="fNo"></span></div>
+            <p class="q" id="fQ"></p>
+            <span class="hint">Tap the card or press Space to see the answer</span>
+          </div>
+          <div class="face back">
+            <div class="meta"><span class="tag" id="bTag"></span><span class="type" id="bType"></span></div>
+            <p class="a" id="bA"></p>
+            <p class="pearl" id="bP"></p>
+            <span class="hint">Press <b>Next ›</b> to go to the next card, or rate it with <b>Got it ›</b> / <b>Review again ›</b>.</span>
+          </div>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="group"><button class="btn" id="prev" type="button">‹ Previous card</button><button class="btn solid" id="flip" type="button">Show answer</button><button class="btn next" id="skip" type="button">Next ›</button></div>
+        <div class="group"><button class="btn again" id="again" type="button">Review again ›</button><button class="btn got" id="got" type="button">Got it ›</button></div>
+      </div>
+      <p class="keys"><b>To go to the next card:</b> press <b>Next ›</b>, or rate the card with <b>Got it ›</b> or <b>Review again ›</b> (rating also moves you on) • Keys: <kbd>Space</kbd> flip • <kbd>→</kbd> next • <kbd>←</kbd> previous • <kbd>2</kbd> got it • <kbd>1</kbd> review again</p>
+    </div>
+    <div class="done" id="done" hidden>
+      <h2 id="doneTitle">Round complete</h2>
+      <p id="doneTxt"></p>
+      <div class="group"><button class="btn solid" id="redoMissed" type="button">Study the ones I missed</button><button class="btn" id="restart" type="button">Restart this deck</button><button class="btn" id="shuffle" type="button">Shuffle and restart</button></div>
+    </div>
+  </section>
+
+  <section id="browse" hidden>
+    <div style="display:grid;gap:10px">
+      <label for="q" class="sub">Search cards in this deck</label>
+      <input id="q" class="search" type="search" placeholder="Try: lithium, CIWA, DBT, Tarasoff">
+      <div class="list" id="list"></div>
+    </div>
+  </section>
+
+  <footer>© Advanced NP Certification Review Services by Dr. Adekemi Akinlawon • <a href="mailto:advancednpcertificationreview@gmail.com">advancednpcertificationreview@gmail.com</a> • <a href="tel:+12813729148">+1 (281) 372-9148</a> • For individual study only • Not affiliated with or endorsed by ANCC • Progress is saved in this browser only</footer>
+</div>
+
+<script>
+// Card rows: [deck, type, front, back, pearl]; the id (001, 002, ...) is added below.
+const RAW = [];
+const D = (deck, rows) => rows.forEach(r => RAW.push([deck, ...r]));
+D("Exam and Professional Role", [
+["Exam fact","ANCC PMHNP-BC exam: credential, number of questions and time","PMHNP-BC™ (Psychiatric-Mental Health Nurse Practitioner, Across the Lifespan); 175 questions (150 scored, 25 unscored pretest); 3.5 hours of testing time (about 4 hours with check-in)","Pretest items cannot be told apart from scored items, so answer every question. There is no penalty for guessing; flag and return."],
+["Exam fact","ANCC scoring: scale, passing score and result format","Scaled score with a maximum of 500; a scaled score of 350 or higher passes; the result is reported as pass or fail","The exam is criterion-referenced (not curved). A failing report gives LOW, MEDIUM or HIGH feedback for each content domain."],
+["Exam fact","PMHNP-BC content domains and weights (150 scored items)","I Scientific Foundation 22% (33) • II Advanced Practice Skills 27% (41) • III Diagnosis and Treatment 22% (33) • IV Psychotherapy and Related Theories 11% (17) • V Ethics, Legal Principles and Cultural Care 17% (26)","The test content outline took effect April 28, 2023 (updated July 28, 2026). Check nursingworld.org for the current outline before you test."],
+["Exam fact","Largest PMHNP-BC domain and what it contains","Advanced Practice Skills, 27%: clinical interviewing, screening tools, mental status exam, psychiatric emergencies, psychoeducation, recovery, risk assessment, substance screening","Ethics and legal content is 17%, more than psychotherapy (11%). Do not under-study it."],
+["Exam fact","Secondary classifications used to build PMHNP items (APRN Consensus Model)","Body systems (13), drug agents (12, including psychiatric and analgesic) and age groups from infant through frail elderly","Expect medical comorbidity, pharmacology and lifespan questions, not only psychiatric diagnoses."],
+["Exam fact","Main reference texts named for the PMHNP-BC exam","DSM-5-TR; Stahl’s Prescriber’s Guide and Neuroscientific Basis; Kaplan & Sadock; Varcarolis; Carlat’s The Psychiatric Interview; Wheeler’s Psychotherapy for the Advanced Practice Psychiatric Nurse; ANA Scope and Standards of Psychiatric-Mental Health Nursing (3rd ed.)","Diagnostic criteria questions follow DSM-5-TR wording, so learn durations and counts."],
+["Exam fact","Eligibility to sit for the ANCC PMHNP exam","Active RN license; master’s, postgraduate or doctoral degree from an accredited APRN program (CCNE, ACEN or NLN CNEA); three separate graduate core courses (advanced pathophysiology, health assessment, pharmacology); at least 500 faculty-supervised clinical hours in the role and population","No eligibility criteria are waived, and a past certification cannot stand in for eligibility."],
+["Exam fact","Time limit to apply for an ANCC APRN certification","Within 5 years of degree conferral (policy effective January 1, 2026)","From 2026, only postgraduate certificate (PGC) program accreditation counts for PGC applicants, not a parallel master’s or DNP accreditation."],
+["Exam fact","ANCC testing logistics","Computer-based at Prometric; you have 120 days to test after the Authorization to Test; arrive 15 minutes early; valid unexpired government ID with signature and a photo no older than 10 years","One-time new 120-day window for $100. Canceling less than 2 days before the test forfeits the fee. APRN candidates also give a fingerprint (biometric) at check-in."],
+["Exam fact","Retesting after a failed ANCC exam","Wait 60 calendar days; no more than 3 attempts in 12 months; new application and fees; retake the whole exam","Use the LOW/MEDIUM/HIGH domain feedback to plan study."],
+["Exam fact","Length of ANCC certification and renewal rules","5 years; renew on or before the expiration date; no grace period and no backdating","A gap in dates cannot be backdated for licensure or reimbursement. Keep an active RN license and tell ANCC at once about any license action."],
+["Exam fact","Exam security rules","Sign a Statement of Understanding; no sharing of exam content; no phones or papers in the room; dry-erase board only; water only","Violations can mean invalidated scores, loss of certification and civil penalties."],
+["Concept","What determines a PMHNP’s legal scope of practice","The state Nurse Practice Act and board of nursing rules","Certification shows competence; the state license grants legal authority. Prescriptive authority and practice independence vary by state."],
+["Concept","LACE and the APRN Consensus Model","Licensure, Accreditation, Certification, Education: the four elements of APRN regulation","PMHNP is a population focus (across the lifespan) under the Nurse Practitioner role."],
+["Concept","Prescribing controlled substances","Needs state authority plus DEA registration; check the state prescription drug monitoring program (PDMP); Schedule II drugs allow no refills","Telehealth prescribing of controlled drugs follows DEA rules that have been extended repeatedly; verify the current rule."],
+["Concept","DEA schedules for common psychiatric drugs","Schedule II: stimulants and opioids. III: buprenorphine, testosterone. IV: benzodiazepines, zolpidem, modafinil, suvorexant. V: pregabalin, lacosamide","Esketamine is Schedule III. Bupropion, SSRIs and antipsychotics are not controlled."],
+["Concept","Collaborative Care Model (CoCM)","Primary care clinician, behavioral health care manager and a psychiatric consultant treat to target using a registry and measurement-based care","Evidence-based integrated care model for depression and anxiety in primary care."]
+]);
+
+D("Neuroscience and Neurodevelopment", [
+["Concept","Four dopamine pathways and what blocking D2 does in each","Mesolimbic: lowers positive symptoms. Mesocortical: may worsen negative and cognitive symptoms. Nigrostriatal: extrapyramidal symptoms. Tuberoinfundibular: raises prolactin","Partial agonists (aripiprazole) and 5-HT2A antagonism reduce EPS and prolactin effects."],
+["Concept","Monoamine synthesis pathways","Tyrosine → L-dopa → dopamine → norepinephrine → epinephrine. Tryptophan → 5-HTP → serotonin → melatonin","Tryptophan hydroxylase and tyrosine hydroxylase are the rate-limiting steps."],
+["Concept","Serotonin receptor effects that matter on the exam","5-HT1A partial agonism: anxiolysis (buspirone). 5-HT2A antagonism: antipsychotic, sleep and less EPS. 5-HT2C: weight gain. 5-HT3: nausea and diarrhea. 5-HT4: GI motility","Mirtazapine blocks 5-HT2A, 5-HT2C and 5-HT3."],
+["Concept","Receptor blockade and the side effect it causes","H1: sedation, weight gain. M1 (muscarinic): dry mouth, constipation, blurred vision, urinary retention, confusion. Alpha-1: orthostasis and dizziness. D2: EPS and high prolactin","Anticholinergic toxicity: hot, dry, red, blind, mad. Physostigmine is the antidote for severe cases."],
+["Concept","GABA-A receptor agents","Benzodiazepines raise the frequency of chloride channel opening; barbiturates raise the duration; alcohol, Z-drugs and neurosteroids also act here","Barbiturates are more dangerous in overdose because they can open the channel directly."],
+["Concept","Glutamate and NMDA","Glutamate is the main excitatory transmitter. Ketamine and esketamine block NMDA receptors; memantine is a low-affinity uncompetitive NMDA antagonist","Ketamine can cause transient dissociation and rise in blood pressure."],
+["Concept","Brain regions and functions tested in psychiatry","Prefrontal cortex: executive function and judgment. Amygdala: fear and emotion. Hippocampus: memory. Hypothalamus: sleep, appetite, HPA axis. Basal ganglia: movement. Nucleus accumbens: reward","Hippocampal and prefrontal changes are linked to depression and PTSD."],
+["Concept","Frontal lobe syndromes","Dorsolateral: poor planning and executive dysfunction. Orbitofrontal: disinhibition and impulsivity. Medial (cingulate): apathy and abulia","Frontotemporal dementia often starts with personality and behavior change."],
+["Concept","Aphasia types","Broca: nonfluent speech, comprehension intact. Wernicke: fluent but meaningless speech, poor comprehension. Conduction: poor repetition","Broca area is in the inferior frontal gyrus; Wernicke in the superior temporal gyrus."],
+["Concept","HPA axis findings in depression","High cortisol, nonsuppression on the dexamethasone suppression test, and reduced hippocampal volume","Chronic stress lowers BDNF (brain-derived neurotrophic factor); antidepressants raise it."],
+["Concept","Sleep architecture changes in depression","Short REM latency, more REM early in the night, less slow-wave (N3) sleep and early morning awakening","Most antidepressants (not bupropion, mirtazapine or trazodone) suppress REM."],
+["Concept","Circadian rhythm basics","The suprachiasmatic nucleus sets the clock; light suppresses melatonin release from the pineal gland","Melatonin agonists (ramelteon) act at MT1 and MT2 receptors."],
+["Concept","Orexin (hypocretin)","Promotes wakefulness; loss of orexin neurons causes narcolepsy type 1; orexin antagonists (suvorexant, lemborexant, daridorexant) treat insomnia","Orexin antagonists are contraindicated in narcolepsy."],
+["Concept","Neurodevelopment timeline","Myelination and synaptic pruning continue through adolescence; the prefrontal cortex matures last, in the mid-20s","Excess pruning is one hypothesis for schizophrenia onset in late adolescence."],
+["Concept","Heritability estimates for major disorders","Schizophrenia and bipolar disorder about 70–80%; autism about 80%; ADHD about 75%; major depression about 40%","Monozygotic twin concordance in schizophrenia is about 50%, showing environment matters."],
+["Concept","Schizophrenia neurobiology hypotheses","Dopamine (mesolimbic excess, mesocortical deficit), glutamate (NMDA hypofunction) and neurodevelopmental (excess pruning)","PCP and ketamine mimic positive and negative symptoms through NMDA blockade."],
+["Concept","Reward and addiction pathway","Dopamine from the ventral tegmental area to the nucleus accumbens drives reward; drugs hijack it","Chronic use lowers D2 receptor availability, causing anhedonia in withdrawal."],
+["Concept","Opioid receptor effects","Mu: analgesia, euphoria, respiratory depression, dependence. Kappa: dysphoria. Delta: modulation","Buprenorphine is a mu partial agonist and kappa antagonist; naltrexone is a mu antagonist."],
+["Concept","Acetylcholine in dementia","Loss of cholinergic neurons in the nucleus basalis of Meynert; cholinesterase inhibitors increase acetylcholine","Anticholinergic drugs worsen cognition in dementia."],
+["Concept","Monoamine oxidase types","MAO-A metabolizes serotonin, norepinephrine and dopamine (and tyramine); MAO-B metabolizes dopamine","Selegiline is MAO-B selective at low oral doses; it becomes nonselective at higher or transdermal doses."],
+["Concept","Tolerance, dependence, withdrawal and sensitization","Tolerance: needs more for the same effect. Physical dependence: withdrawal on stopping. Sensitization (reverse tolerance): stronger response over time","Craving and relapse are driven by cue-triggered dopamine release."]
+]);
+
+D("Pharmacokinetics and Pharmacogenomics", [
+["Concept","Pharmacokinetics vs pharmacodynamics","Kinetics: what the body does to the drug (absorption, distribution, metabolism, excretion). Dynamics: what the drug does to the body (receptor effects)","Older adults: less lean mass and water, more fat, lower renal clearance, so lipophilic drugs have longer half-lives."],
+["Concept","Steady state and half-life rule","About 4–5 half-lives to reach steady state and about 4–5 to clear a drug","Fluoxetine plus norfluoxetine half-life is long (up to 1–2 weeks), so levels change slowly."],
+["Drug","Strong CYP2D6 inhibitors in psychiatry","Fluoxetine, paroxetine, bupropion (also duloxetine, moderate)","They raise levels of TCAs, atomoxetine, aripiprazole, risperidone, codeine (less analgesia) and tamoxifen (less active metabolite)."],
+["Drug","CYP2D6 substrates to watch","TCAs, venlafaxine, vortioxetine, atomoxetine, aripiprazole, brexpiprazole, risperidone, haloperidol, codeine, tramadol","In poor metabolizers, reduce the dose; in ultrarapid metabolizers, codeine can cause fatal respiratory depression."],
+["Drug","CYP3A4 substrates and inducers","Substrates: alprazolam, triazolam, buspirone, quetiapine, lurasidone, suvorexant, zolpidem, trazodone. Inducers: carbamazepine, St. John’s wort, rifampin, phenytoin, modafinil","Lurasidone is contraindicated with strong 3A4 inhibitors or inducers. Carbamazepine induces its own metabolism (autoinduction)."],
+["Drug","CYP1A2 and smoking","Smoking (polycyclic hydrocarbons) induces 1A2 and lowers olanzapine and clozapine levels; fluvoxamine and ciprofloxacin inhibit 1A2","If a patient quits smoking, clozapine or olanzapine levels can rise sharply; reduce the dose and check levels."],
+["Drug","CYP2C19 and citalopram or escitalopram","Poor 2C19 metabolizers have higher levels; citalopram maximum is 20 mg/day in those over 60, with hepatic impairment, in 2C19 poor metabolizers or with cimetidine","Usual citalopram maximum is 40 mg/day because of QTc prolongation."],
+["Drug","Glucuronidation drugs safe in liver disease","Lorazepam, oxazepam, temazepam (LOT)","They bypass CYP oxidation and have no active metabolites; preferred in older adults and cirrhosis."],
+["Drug","Valproate and lamotrigine interaction","Valproate inhibits glucuronidation and roughly doubles lamotrigine levels; halve the lamotrigine dose and titrate slowly","Carbamazepine and estrogen-containing contraceptives lower lamotrigine levels."],
+["Lab","Therapeutic drug levels to know","Lithium 0.6–1.2 mEq/L • valproate 50–125 mcg/mL • carbamazepine 4–12 mcg/mL • clozapine ≥ 350 ng/mL for response","Draw lithium 12 hours after the last dose, at steady state (about 5 days)."],
+["Drug","Narrow therapeutic index psychiatric drugs","Lithium, valproate, carbamazepine, phenytoin, TCAs, clozapine","Small interactions or dose changes can cause toxicity or loss of effect."],
+["Concept","HLA genotype testing before drugs","HLA-B*15:02 before carbamazepine (and oxcarbazepine) in patients of Asian ancestry: risk of Stevens–Johnson syndrome/TEN. HLA-A*31:01 also raises hypersensitivity risk","Test before starting, not after a rash appears."],
+["Concept","Role and limits of psychopharmacogenomic tests","Panels can inform CYP2D6 and CYP2C19 dosing; they do not predict which drug will work for a given patient","Use as one input alongside clinical response, interactions and side effects."],
+["Concept","Lithium pharmacokinetics","Not metabolized by the liver; renally excreted and reabsorbed with sodium in the proximal tubule","Low sodium, dehydration, thiazides, ACE inhibitors, ARBs and NSAIDs raise lithium levels."],
+["Concept","Zero-order vs first-order elimination","First-order: a constant fraction is cleared (most drugs). Zero-order: a constant amount is cleared, so levels climb quickly (alcohol, phenytoin at high dose)","Alcohol is cleared at about one standard drink per hour."],
+["Concept","Pharmacodynamic interactions to recognize","Serotonergic combinations (serotonin syndrome); additive CNS depressants (opioid plus benzodiazepine); additive QTc drugs","Opioid plus benzodiazepine carries a boxed warning for respiratory depression and death."],
+["Drug","Washout periods involving MAOIs","Wait 14 days after stopping an MAOI before starting a serotonergic drug, and 5 weeks after fluoxetine before starting an MAOI","Wait at least 2 weeks after stopping most other antidepressants before an MAOI."],
+["Drug","Grapefruit juice","Inhibits intestinal CYP3A4 and raises levels of drugs such as buspirone, lurasidone and quetiapine","Counsel to avoid grapefruit with lurasidone."],
+["Concept","Bioavailability and first-pass effect","Oral drugs are partly metabolized by the liver before reaching the circulation; sublingual, transdermal, IM and IV routes bypass it","Transdermal selegiline avoids gut MAO-A inhibition, so the diet restriction is relaxed at the lowest dose."],
+["Concept","Protein binding interactions","Highly protein-bound drugs (valproate, warfarin) can displace each other; low albumin raises the free fraction","Total valproate levels can look normal while free levels are high in hypoalbuminemia."]
+]);
+
+D("Antidepressants and Brain Stimulation", [
+["Drug","SSRI class: first-line uses and common side effects","First-line for depression, anxiety, OCD and PTSD; side effects: nausea, sexual dysfunction, insomnia or sedation, headache, bleeding risk, hyponatremia (SIADH)","Onset 2–4 weeks; full effect 6–8 weeks. Taper to stop to avoid discontinuation symptoms."],
+["Drug","SSRI discontinuation syndrome (FINISH)","Flu-like symptoms, Insomnia, Nausea, Imbalance, Sensory disturbances (electric-shock sensations), Hyperarousal","Worst with paroxetine and venlafaxine; least with fluoxetine because of its long half-life."],
+["Drug","Sertraline key points","Preferred in cardiac disease and during lactation; most GI upset and diarrhea; approved for OCD, PTSD, panic, social anxiety and PMDD","Safe in pregnancy compared with most options; low levels in breast milk."],
+["Drug","Citalopram and escitalopram","Dose-related QTc prolongation with citalopram (maximum 40 mg; 20 mg if over 60); escitalopram 10–20 mg is the better-tolerated enantiomer","Avoid in long QT syndrome; check ECG and electrolytes if risk factors."],
+["Drug","Fluoxetine key points","Long half-life; activating; FDA approved for MDD from age 8, OCD from age 7, bulimia (60 mg) and PMDD; strong CYP2D6 inhibitor","Needs a 5-week washout before an MAOI."],
+["Drug","Paroxetine key points","Most anticholinergic and weight gain of the SSRIs; worst discontinuation syndrome; avoid in pregnancy (cardiac malformation signal)","Do not combine with tamoxifen (CYP2D6 inhibition)."],
+["Drug","Fluvoxamine key points","Approved for OCD; strong CYP1A2 inhibitor and 2C19 inhibitor","Raises clozapine, olanzapine, theophylline and caffeine levels."],
+["Drug","SNRI key points","Venlafaxine (dose-related hypertension), desvenlafaxine, duloxetine (pain, neuropathy, fibromyalgia), levomilnacipran","Duloxetine: avoid in hepatic disease or heavy alcohol use. Venlafaxine has the worst discontinuation effects among SNRIs."],
+["Drug","Bupropion key points","Norepinephrine-dopamine reuptake inhibitor; no sexual dysfunction, weight-neutral or loss; helps smoking cessation and seasonal depression prevention","Contraindicated with seizure disorder, bulimia or anorexia nervosa, abrupt alcohol or benzodiazepine withdrawal, and MAOI use."],
+["Drug","Mirtazapine key points","Alpha-2, 5-HT2A, 5-HT2C, 5-HT3 and H1 blocker; weight gain and sedation (more sedating at lower doses); little sexual dysfunction or nausea","Good for depression with insomnia and poor appetite, especially in older adults."],
+["Drug","Trazodone key points","5-HT2A antagonist and weak reuptake inhibitor; low doses (25–100 mg) used for insomnia; orthostasis and priapism","Priapism that lasts more than 4 hours is a urologic emergency."],
+["Drug","Vilazodone and vortioxetine","Multimodal agents with lower sexual dysfunction. Vilazodone must be taken with food. Vortioxetine has cognitive benefit and nausea as a main side effect","Both can cause serotonin syndrome with other serotonergic drugs."],
+["Drug","Tricyclic antidepressants: cautions","Tertiary amines (amitriptyline, imipramine) are more anticholinergic and sedating; secondary amines (nortriptyline, desipramine) are better tolerated. Lethal in overdose (QRS > 100 ms, arrhythmias, seizures)","Treat QRS widening with IV sodium bicarbonate. Avoid in older adults and after MI; get a baseline ECG."],
+["Drug","MAOI key points","Phenelzine, tranylcypromine, isocarboxazid; selegiline patch. Useful in atypical and treatment-resistant depression","Hypertensive crisis with tyramine foods or sympathomimetics; treat with phentolamine or nifedipine. Selegiline 6 mg/24 h patch needs no diet restriction."],
+["Red flag","Serotonin syndrome recognition (Hunter criteria)","Clonus (spontaneous, inducible or ocular) with agitation, diaphoresis, tremor, hyperreflexia or hypertonia plus fever","Rapid onset (hours); diarrhea and dilated pupils; stop the drugs, give benzodiazepines, and use cyproheptadine if severe."],
+["Concept","Antidepressant boxed warning","Increased suicidal thoughts and behavior in children, adolescents and young adults under 25","Monitor weekly in the first month and after dose changes; the risk is not seen over age 65."],
+["Guideline","How to define an adequate antidepressant trial","An adequate dose for 4–8 weeks; if less than 20% improvement by 2–4 weeks, consider changing or adjusting","Treatment-resistant depression: failure of at least 2 adequate trials."],
+["Guideline","Duration of antidepressant treatment","Continue 6–12 months after remission for a first episode; longer or indefinitely with recurrent episodes or severe illness","Stopping too early is the main cause of relapse."],
+["Drug","Augmentation strategies for partial response","Aripiprazole, brexpiprazole, quetiapine XR, cariprazine (adjunctive MDD); lithium; T3; bupropion or mirtazapine added","Lithium augmentation also lowers suicide risk."],
+["Drug","Esketamine nasal spray","For treatment-resistant depression and MDD with suicidal ideation; given in a certified setting under a REMS; patient observed for at least 2 hours","Side effects: dissociation, sedation, blood pressure rise. It is Schedule III."],
+["Drug","Brexanolone and zuranolone","GABA-A positive modulators for postpartum depression: brexanolone is a 60-hour IV infusion; zuranolone is a 14-day oral course","Warn about sedation and driving impairment; zuranolone is approved for postpartum depression only."],
+["Drug","Dextromethorphan–bupropion (Auvelity)","Oral NMDA antagonist plus bupropion for MDD in adults","Bupropion inhibits CYP2D6 and raises dextromethorphan levels; same seizure cautions as bupropion."],
+["Concept","Electroconvulsive therapy (ECT) indications","Severe or psychotic depression, catatonia, acute suicidality, refusal to eat or drink, treatment resistance, mania, and depression in pregnancy","Typical course 6–12 treatments, 2–3 times weekly. Main side effects: confusion and retrograde amnesia. No absolute contraindication."],
+["Concept","Practical points for ECT","Under general anesthesia with muscle relaxant; benzodiazepines and anticonvulsants raise the seizure threshold; hold lithium before ECT; ultrabrief right unilateral placement has the least memory impairment","Relapse is high unless followed by continuation treatment."],
+["Concept","Transcranial magnetic stimulation (TMS)","Magnetic pulses to the left dorsolateral prefrontal cortex, daily for 4–6 weeks, no anesthesia","Contraindicated with metal in or near the head (cochlear implants) and increased seizure risk."],
+["Concept","Bright light therapy for seasonal pattern depression","10,000 lux for 20–30 minutes in the early morning","Watch for mania in bipolar patients; eye disease needs an eye exam first."],
+["Drug","Antidepressant effect on sexual function","Highest with SSRIs and SNRIs; lowest with bupropion, mirtazapine, vilazodone and vortioxetine","Options for sexual side effects: lower dose, add bupropion, switch, or add sildenafil."],
+["Drug","SSRIs and bleeding","SSRIs inhibit platelet serotonin uptake and raise bleeding risk, especially with NSAIDs, aspirin or anticoagulants","Consider a PPI for older patients on both an SSRI and an NSAID."],
+["Drug","Hyponatremia with antidepressants","SIADH is most often seen in older women, those on diuretics, and in the first weeks of SSRI or SNRI therapy","Check sodium at baseline and 2–4 weeks in older adults; confusion or falls are warning signs."]
+]);
+
+D("Antipsychotics", [
+["Drug","First- vs second-generation antipsychotics","First-generation (haloperidol, chlorpromazine, fluphenazine) block D2 and cause more EPS and prolactin rise. Second-generation add 5-HT2A blockade and cause more metabolic effects","High-potency agents: more EPS. Low-potency agents: more sedation, anticholinergic effects and orthostasis."],
+["Drug","Partial dopamine agonists","Aripiprazole, brexpiprazole and cariprazine","Low prolactin and metabolic risk, but akathisia is common."],
+["Drug","Metabolic risk ranking of second-generation antipsychotics","Highest: clozapine and olanzapine. Moderate: quetiapine, risperidone, paliperidone. Lowest: aripiprazole, ziprasidone, lurasidone, brexpiprazole, cariprazine, lumateperone","Olanzapine–samidorphan (Lybalvi) is designed to blunt olanzapine weight gain."],
+["Guideline","Metabolic monitoring for antipsychotics","Baseline: personal and family history, weight/BMI, waist, BP, fasting glucose or A1c, lipids. Weight at 4, 8 and 12 weeks, then quarterly; BP, glucose and lipids at 12 weeks, then yearly (lipids every 5 years if normal)","Metabolic syndrome counts (any 3): waist > 40 in (men) or > 35 in (women), TG ≥ 150, HDL < 40 (men) or < 50 (women), BP ≥ 130/85, fasting glucose ≥ 100."],
+["Drug","Antipsychotics that raise prolactin the most","Risperidone and paliperidone, then first-generation agents","Effects: amenorrhea, galactorrhea, sexual dysfunction, bone loss. Aripiprazole can lower prolactin."],
+["Drug","Antipsychotics with the greatest QTc risk","Thioridazine, pimozide, IV haloperidol, ziprasidone, chlorpromazine","Correct hypokalemia and hypomagnesemia; avoid combining QT-prolonging drugs. QTc > 500 ms is high risk."],
+["Drug","Antipsychotics that must be taken with food","Ziprasidone (at least 500 kcal) and lurasidone (at least 350 kcal)","Absorption falls without a meal, reducing efficacy."],
+["Red flag","Extrapyramidal syndromes: timing and treatment","Acute dystonia (hours to days): benztropine or diphenhydramine IM. Parkinsonism (weeks): lower dose or anticholinergic. Akathisia (days to weeks): propranolol, lower dose, mirtazapine or benzodiazepine. Tardive dyskinesia (months to years): VMAT2 inhibitor","Anticholinergics do not treat tardive dyskinesia and can worsen it."],
+["Drug","Tardive dyskinesia treatment and monitoring","Valbenazine or deutetrabenazine (VMAT2 inhibitors); screen with the AIMS every 6–12 months","Risk is higher in older adults, women, first-generation agents and long exposure. VMAT2 inhibitors can worsen depression in Huntington disease."],
+["Red flag","Neuroleptic malignant syndrome (NMS)","Fever, lead-pipe rigidity, altered mental status, autonomic instability, high CK, leukocytosis; onset over days","Stop the antipsychotic, give fluids and cooling, benzodiazepines; dantrolene or bromocriptine for severe cases. Serotonin syndrome has clonus and rapid onset instead."],
+["Drug","Clozapine: indications","Treatment-resistant schizophrenia (failure of 2 adequate antipsychotic trials) and reduction of suicidal behavior in schizophrenia or schizoaffective disorder","Also helps tardive dyskinesia and aggression. A response level is about 350 ng/mL or higher."],
+["Drug","Clozapine: neutropenia monitoring","Baseline ANC ≥ 1500/µL (≥ 1000 for benign ethnic neutropenia); weekly for 6 months, every 2 weeks for 6 months, then monthly; interrupt for ANC < 1000","FDA removed the REMS program in 2025, but ANC monitoring per the label is still expected. Check the current label."],
+["Drug","Clozapine: other major adverse effects","Sialorrhea, seizures (dose related), myocarditis in the first 4–8 weeks (check troponin and CRP), constipation or ileus, orthostasis, metabolic syndrome","If doses are missed for more than 2 days, restart with titration. Constipation can be fatal; treat early."],
+["Drug","Long-acting injectable (LAI) antipsychotics: examples","Haloperidol and fluphenazine decanoate; risperidone (Consta, Perseris, Uzedy); paliperidone (monthly, every 3 months, every 6 months); aripiprazole (monthly, every 2 months); olanzapine pamoate","Use for nonadherence. Olanzapine pamoate needs 3 hours of observation after each injection (post-injection delirium sedation syndrome)."],
+["Concept","Boxed warning for antipsychotics","Increased mortality in older adults with dementia-related psychosis","Brexpiprazole is the only antipsychotic approved for agitation due to Alzheimer dementia."],
+["Drug","Xanomeline–trospium (Cobenfy)","Muscarinic agonist approved for schizophrenia in adults; no direct D2 blockade","Cholinergic side effects: nausea, vomiting, constipation, urinary retention; avoid with urinary retention, moderate–severe hepatic impairment or narrow-angle glaucoma."],
+["Drug","Pimavanserin","5-HT2A inverse agonist approved for hallucinations and delusions of Parkinson disease psychosis","Antipsychotics that worsen motor symptoms are avoided; quetiapine and clozapine are alternatives."],
+["Drug","Antipsychotics approved for bipolar depression","Quetiapine, lurasidone, cariprazine, lumateperone, olanzapine–fluoxetine combination","Lamotrigine is used for maintenance but is not approved for acute bipolar depression."],
+["Drug","Management of acute agitation","Verbal de-escalation first; oral lorazepam with an antipsychotic (olanzapine, risperidone) or IM haloperidol, olanzapine or ziprasidone; sublingual dexmedetomidine is an option","Do not give IM olanzapine within about 1 hour of IM benzodiazepine (respiratory depression, hypotension)."],
+["Drug","Antipsychotic adjunct and non-psychotic uses","Adjunct in MDD (aripiprazole, brexpiprazole, quetiapine XR, cariprazine); irritability in autism (risperidone, aripiprazole); Tourette (aripiprazole, risperidone, haloperidol)","Use the lowest dose and monitor metabolic and movement effects in children."],
+["Guideline","How long to give an antipsychotic trial","4–6 weeks at an adequate dose; if no response, switch","If 2 adequate trials fail, consider clozapine."],
+["Concept","Antipsychotic side effect vs mechanism","Weight gain: H1 and 5-HT2C. Sedation: H1. Orthostasis: alpha-1. Dry mouth and constipation: M1. EPS and prolactin: D2","Quetiapine at low doses acts mainly on H1 and is sedating."]
+]);
+
+D("Mood Stabilizers", [
+["Drug","Lithium baseline workup and monitoring","Baseline: BUN, creatinine/eGFR, TSH, calcium, CBC, pregnancy test, ECG if over 40 or cardiac risk. Monitor level, renal function, TSH and calcium every 3–6 months","Level 5 days after a dose change and 12 hours after the last dose."],
+["Drug","Lithium therapeutic range","0.6–1.2 mEq/L (acute mania 0.8–1.2; maintenance 0.6–1.0)","It is the only mood stabilizer with strong evidence for reducing suicide."],
+["Red flag","Lithium toxicity signs by level","Mild (1.5–2.0): coarse tremor, nausea, vomiting, diarrhea. Moderate (2.0–2.5): confusion, ataxia, slurred speech. Severe (> 2.5): seizures, coma, arrhythmia","Hold lithium and send urgent levels; hemodialysis for severe toxicity or neurologic signs."],
+["Drug","Drugs and conditions that raise lithium levels","Thiazides (up to 25–40%), ACE inhibitors, ARBs, NSAIDs (not aspirin), dehydration, low-sodium diet, renal impairment","Loop diuretics raise lithium less than thiazides."],
+["Drug","Lithium long-term adverse effects","Hypothyroidism, nephrogenic diabetes insipidus, chronic kidney disease, hyperparathyroidism with high calcium, weight gain, fine tremor, benign leukocytosis","Fine tremor is expected; coarse tremor suggests toxicity. Propranolol treats lithium tremor."],
+["Drug","Lithium in pregnancy","Small increase in cardiac malformation risk (Ebstein anomaly); levels fall in pregnancy and rise after delivery","Check levels more often; dose adjustments are common. Breastfeeding is generally discouraged."],
+["Drug","Valproate key points","Levels 50–125 mcg/mL; monitor LFTs, CBC and platelets; effective for mixed episodes and rapid cycling","Boxed warnings: hepatotoxicity, pancreatitis, teratogenicity (neural tube defects, lower IQ). Avoid in pregnancy and in women of childbearing potential without contraception."],
+["Drug","Valproate adverse effects","Weight gain, tremor, hair loss, thrombocytopenia, hyperammonemic encephalopathy, polycystic ovary syndrome","Check ammonia if confusion occurs despite normal LFTs."],
+["Drug","Carbamazepine key points","Level 4–12 mcg/mL; baseline CBC, LFTs and sodium; HLA-B*15:02 testing in Asian ancestry","Aplastic anemia, agranulocytosis, SIADH hyponatremia, SJS/TEN; strong CYP3A4 inducer lowers oral contraceptive levels."],
+["Drug","Oxcarbazepine vs carbamazepine","Oxcarbazepine causes less enzyme induction and hematologic toxicity but still causes hyponatremia","Still check sodium; can lower hormonal contraceptive effect."],
+["Drug","Lamotrigine key points","Bipolar maintenance and bipolar depression prevention; weak antimanic effect; slow titration to lower SJS/rash risk","If missed for more than 5 half-lives (about 5 days), retitrate. Valproate doubles levels; carbamazepine and estrogen lower them."],
+["Red flag","Lamotrigine rash","Any rash in the first 8 weeks needs prompt evaluation; stop for fever, mucosal involvement, blistering or facial swelling","Most serious rashes occur with rapid titration or valproate co-administration."],
+["Drug","Choosing a mood stabilizer by presentation","Classic euphoric mania: lithium. Mixed features or rapid cycling: valproate. Bipolar depression prevention: lamotrigine or lithium. Pregnancy: lamotrigine has the best safety record","Combine with a second-generation antipsychotic for severe mania."],
+["Drug","Topiramate, gabapentin and pregabalin in psychiatry","Topiramate: cognitive slowing, weight loss, kidney stones, metabolic acidosis, acute angle-closure glaucoma. Gabapentinoids: renal dosing, sedation, misuse potential","Neither gabapentin nor topiramate is effective as a mood stabilizer for bipolar mania."],
+["Drug","Antipsychotics used as mood stabilizers","Olanzapine, risperidone, quetiapine, aripiprazole, asenapine, cariprazine, ziprasidone for acute mania; many also prevent relapse","Monitor metabolic effects with long-term use."]
+]);
+
+D("Anxiolytics, Hypnotics and Sleep", [
+["Drug","Benzodiazepine key points","Enhance GABA-A; rapid anxiolysis; risks: sedation, falls, cognitive impairment, dependence, withdrawal seizures, respiratory depression with opioids or alcohol","Use short term; avoid in older adults (Beers), PTSD and substance use disorders when possible."],
+["Drug","Benzodiazepine taper","Reduce 5–10% every 2–4 weeks, no faster than 25% every 2 weeks; sometimes switch to a longer-acting agent","Abrupt cessation can cause seizures and delirium. Short-acting agents cause the worst withdrawal."],
+["Drug","Short-acting vs long-acting benzodiazepines","Short: alprazolam, lorazepam, oxazepam, triazolam. Long: diazepam, clonazepam, chlordiazepoxide, clorazepate","Long-acting agents accumulate in older adults and cause daytime impairment."],
+["Drug","Flumazenil","Benzodiazepine antagonist","It can precipitate seizures in physically dependent patients and in mixed overdoses (TCAs); use cautiously."],
+["Drug","Buspirone key points","5-HT1A partial agonist for generalized anxiety; takes 2–4 weeks; no sedation, dependence or withdrawal; not effective for panic or as an as-needed drug","Do not combine with MAOIs. CYP3A4 substrate (avoid grapefruit and strong inhibitors)."],
+["Drug","Hydroxyzine, propranolol, prazosin and clonidine in psychiatry","Hydroxyzine (H1) for short-term anxiety; propranolol for performance anxiety and lithium tremor; prazosin for PTSD nightmares; clonidine and guanfacine for ADHD, tics and withdrawal","Hydroxyzine adds anticholinergic burden and QTc risk."],
+["Drug","Z-drugs (zolpidem, eszopiclone, zaleplon)","GABA-A agonists for insomnia; boxed warning for complex sleep behaviors (sleepwalking, sleep-driving)","The FDA recommended dose of immediate-release zolpidem for women is 5 mg; avoid in older adults."],
+["Drug","Ramelteon","MT1 and MT2 melatonin receptor agonist for sleep-onset insomnia; not controlled","Avoid with fluvoxamine (strong CYP1A2 inhibitor)."],
+["Drug","Dual orexin receptor antagonists","Suvorexant, lemborexant, daridorexant: promote sleep by blocking orexin","Contraindicated in narcolepsy; may cause next-day drowsiness and sleep paralysis; Schedule IV."],
+["Drug","Low-dose doxepin for insomnia","3–6 mg at bedtime acts mainly as an H1 antagonist for sleep maintenance","Not an antidepressant dose; little anticholinergic effect at this strength."],
+["Guideline","First-line treatment of chronic insomnia","Cognitive behavioral therapy for insomnia (CBT-I): sleep restriction, stimulus control, sleep hygiene, relaxation","Medication is second-line and short term."],
+["Concept","Narcolepsy","Excessive daytime sleepiness with cataplexy (type 1, hypocretin deficiency), sleep paralysis, hypnagogic hallucinations, and REM sleep within 15 minutes of sleep onset","Treat with modafinil or armodafinil, stimulants, sodium oxybate or pitolisant; sodium oxybate is a CNS depressant."],
+["Concept","REM sleep behavior disorder","Acting out dreams from loss of REM atonia; often an early sign of synucleinopathy (Parkinson disease, Lewy body dementia)","Treat with melatonin or clonazepam and secure the bedroom."],
+["Concept","Sleep disorders by sleep stage","Sleepwalking, night terrors: N3 (slow-wave) sleep. Nightmares: REM sleep","Children usually outgrow N3 parasomnias."],
+["Concept","Obstructive sleep apnea screening","STOP-BANG score ≥ 3; confirm with polysomnography; CPAP first-line","Benzodiazepines and sedatives can worsen sleep apnea."]
+]);
+
+D("ADHD and Stimulants", [
+["Concept","DSM-5-TR criteria for ADHD","Six or more inattentive and/or hyperactive-impulsive symptoms (five or more at age 17 and older) for at least 6 months, in 2 or more settings, with several present before age 12","Presentations: combined, predominantly inattentive, predominantly hyperactive-impulsive."],
+["Drug","First-line ADHD medications","Stimulants: methylphenidate and amphetamine preparations","Response rate about 70–80%. Preschool (4–5 years): parent behavior training first, then methylphenidate if needed."],
+["Drug","Stimulant adverse effects and cautions","Decreased appetite and weight loss, insomnia, irritability, tachycardia and increased BP, tics (rarely), psychosis; boxed warning for abuse, misuse and addiction","Contraindicated with MAOIs (14 days), glaucoma and structural cardiac disease; ask about family history of sudden cardiac death."],
+["Drug","Nonstimulant ADHD medications","Atomoxetine, viloxazine (norepinephrine reuptake inhibitors), guanfacine ER and clonidine ER (alpha-2 agonists)","Alpha-2 agonists must be tapered (rebound hypertension); atomoxetine has a boxed warning for suicidal thoughts."],
+["Drug","Atomoxetine key points","Not a controlled substance; takes 4–6 weeks; CYP2D6 substrate; rare hepatotoxicity; boxed suicidality warning","Good for ADHD with tics, anxiety or substance misuse risk."],
+["Drug","Lisdexamfetamine","Prodrug of dextroamphetamine; lower misuse potential; also approved for binge eating disorder","Not for weight loss."],
+["Guideline","Baseline and ongoing monitoring on stimulants","Heart rate, blood pressure, height and weight (growth), appetite, sleep, mood, tics, misuse or diversion","Routine ECG is not required without cardiac history or symptoms."],
+["Concept","ADHD vs bipolar disorder","ADHD is chronic and persistent from childhood; mania is episodic with elevated mood, decreased need for sleep and grandiosity","Stabilize mania before treating ADHD with stimulants."],
+["Guideline","ADHD rating scales","Vanderbilt (parent and teacher), Conners, SNAP-IV for children; ASRS for adults","Collect information from at least 2 settings."],
+["Concept","Behavioral treatments for ADHD","Parent management training, classroom accommodations, organizational skills training","First-line for children under 6; combined treatment is best for moderate–severe disease."]
+]);
+
+D("Substance Use Disorders", [
+["Concept","DSM-5-TR substance use disorder severity","2–3 criteria mild; 4–5 moderate; 6 or more severe (of 11 in 12 months)","Criteria groups: impaired control, social impairment, risky use, pharmacologic (tolerance, withdrawal)."],
+["Guideline","Alcohol withdrawal timeline","Tremor, anxiety and insomnia 6–24 h • seizures 12–48 h • hallucinosis 12–48 h • delirium tremens 48–96 h","Use CIWA-Ar (treat when 8–10 or higher; ≥ 15 is severe). Give thiamine before glucose."],
+["Drug","Treatment of alcohol withdrawal","Symptom-triggered benzodiazepines (chlordiazepoxide, diazepam, or lorazepam/oxazepam in liver disease); phenobarbital as an alternative","Add thiamine, folate and fluids; gabapentin or carbamazepine for mild withdrawal."],
+["Red flag","Wernicke vs Korsakoff","Wernicke: confusion, ataxia, ophthalmoplegia (thiamine deficiency). Korsakoff: severe anterograde amnesia with confabulation","Give IV thiamine before dextrose in any at-risk patient."],
+["Drug","Naltrexone for alcohol use disorder","Opioid antagonist, 50 mg daily or monthly extended-release injection; reduces cravings and heavy drinking","Contraindicated in patients on opioids and in acute hepatitis or liver failure; must be opioid-free 7–10 days."],
+["Drug","Acamprosate","Modulates glutamate; 666 mg three times daily; helps maintain abstinence","Adjust for renal impairment (CrCl 30–50); contraindicated at CrCl ≤ 30; start after detoxification."],
+["Drug","Disulfiram","Blocks aldehyde dehydrogenase, causing flushing, nausea, tachycardia and hypotension with alcohol","Requires abstinence for at least 12 hours before starting; hepatotoxic; use in motivated patients."],
+["Lab","AUDIT and AUDIT-C scoring","AUDIT: 0–7 low risk, 8–15 hazardous, 16–19 harmful, ≥ 20 possible dependence. AUDIT-C: ≥ 4 men or ≥ 3 women is positive","DAST-10 scores: 1–2 low, 3–5 moderate, 6–8 substantial, 9–10 severe."],
+["Lab","Alcohol use biomarkers","GGT, CDT (carbohydrate-deficient transferrin), MCV, AST:ALT ≥ 2:1; phosphatidylethanol (PEth) is the most specific","PEth reflects drinking over the past 2–4 weeks."],
+["Guideline","Opioid withdrawal (COWS)","Mydriasis, yawning, rhinorrhea, piloerection, myalgias, GI upset; COWS 5–12 mild, 13–24 moderate, 25–36 moderately severe, > 36 severe","Starts 8–24 hours after short-acting opioids and 36–72 hours after methadone; not life-threatening."],
+["Drug","Buprenorphine for opioid use disorder","Partial mu agonist; start in moderate withdrawal (COWS 8–12 or higher) 12–24 hours after last short-acting opioid to avoid precipitated withdrawal; typical 8–16 mg/day","The X-waiver was eliminated in 2023. Long-acting injectables: Sublocade and Brixadi."],
+["Drug","Methadone for opioid use disorder","Full agonist dispensed through opioid treatment programs; start 10–30 mg (no more than 40 mg on day one); long half-life","Risks: QTc prolongation and overdose during induction; get an ECG."],
+["Drug","Naltrexone for opioid use disorder","Antagonist (daily oral or monthly extended-release injection); requires 7–14 days opioid-free","Lowers tolerance, so overdose risk is high if the patient relapses after stopping."],
+["Drug","Naloxone","Opioid antagonist for overdose reversal (nasal, IM, IV); repeat doses because its half-life is shorter than many opioids","Prescribe naloxone with opioid and buprenorphine treatment."],
+["Red flag","Opioid overdose triad","Respiratory depression, pinpoint pupils, decreased consciousness","Give naloxone, support breathing and call emergency services."],
+["Drug","Lofexidine and clonidine","Alpha-2 agonists reduce autonomic symptoms of opioid withdrawal","Watch for hypotension and bradycardia."],
+["Concept","Stimulant intoxication and withdrawal","Intoxication: euphoria, mydriasis, tachycardia, hypertension, paranoia. Withdrawal: crash, fatigue, hypersomnia, depression, increased appetite","No FDA-approved medication; contingency management is the best-supported treatment."],
+["Concept","Cannabis use disorder","Withdrawal in 1–2 weeks: irritability, insomnia, decreased appetite; cannabinoid hyperemesis syndrome (cyclic vomiting relieved by hot showers)","Treat with motivational enhancement, CBT and contingency management; heavy early use raises psychosis risk."],
+["Drug","Tobacco cessation medications","Varenicline is the most effective single agent; combination nicotine replacement (patch plus short-acting) and bupropion SR also work","The neuropsychiatric boxed warning for varenicline was removed in 2016; safe in patients with stable psychiatric illness."],
+["Concept","Hallucinogens and PCP","PCP: nystagmus, hypertension, agitation and violence; LSD: perceptual changes and flashbacks (hallucinogen persisting perception disorder)","Treat agitation with benzodiazepines in a calm, low-stimulation setting."],
+["Guideline","Benzodiazepine, barbiturate and GHB withdrawal","Can cause seizures and delirium and may be life-threatening","Treat in a monitored setting with a slow taper or phenobarbital."],
+["Concept","SBIRT","Screening, Brief Intervention, Referral to Treatment","Brief intervention uses motivational interviewing and feedback."],
+["Concept","Harm reduction strategies","Naloxone distribution, syringe services programs, fentanyl test strips, safe use education, medication treatment","Harm reduction meets patients where they are and does not require abstinence."],
+["Lab","Urine drug screen pearls","Cannabis can be detected up to 30 days with chronic use; fentanyl, buprenorphine and many synthetic opioids need specific tests; poppy seeds and codeine give positive opiates","Immunoassay false positives: bupropion, trazodone and some others for amphetamines; confirm with GC-MS or LC-MS."],
+["Concept","Gambling disorder","Persistent problem gambling with 4 of 9 criteria in 12 months; classified as an addictive disorder in DSM-5-TR","Treat with CBT and motivational interviewing; naltrexone has evidence."],
+["Concept","Fetal alcohol spectrum disorder","Growth deficiency, smooth philtrum, thin upper lip, short palpebral fissures, microcephaly and intellectual or behavioral problems","No safe level of alcohol in pregnancy."]
+]);
+
+D("Interview, MSE and Risk Assessment", [
+["Concept","Components of the mental status exam","Appearance, behavior, speech, mood, affect, thought process, thought content, perception, cognition, insight, judgment","Mood is the patient’s stated feeling (subjective); affect is what you observe (objective)."],
+["Concept","Affect descriptors","Flat (no expression), blunted (reduced), constricted (restricted range), labile (rapid shifts), incongruent (does not match content)","Flat affect is common in schizophrenia and severe depression."],
+["Concept","Disorders of thought process","Loose associations (no logical link), tangentiality (never reaches the point), circumstantiality (reaches it after detail), flight of ideas, thought blocking, word salad, clang associations, perseveration","Flight of ideas suggests mania; loose associations and word salad suggest psychosis."],
+["Concept","Disorders of thought content","Delusions (persecutory, grandiose, referential, somatic, erotomanic, jealous), obsessions, phobias, suicidal or homicidal ideation","Bizarre delusions are implausible and not from real life; schizophrenia can have them."],
+["Concept","Disorders of perception","Hallucinations (auditory most common in psychosis; visual suggest delirium or substance use; olfactory suggest seizures), illusions (misperception of real stimuli), depersonalization, derealization","Hypnagogic and hypnopompic hallucinations can be normal at sleep transitions."],
+["Concept","Cognitive testing in the MSE","Orientation, attention (serial 7s, months backward), memory (3-word recall), abstraction (proverbs), language, visuospatial (clock drawing)","MoCA is more sensitive than MMSE for mild cognitive impairment."],
+["Concept","Insight and judgment","Insight: awareness of illness. Judgment: ability to make sound decisions, assessed by hypothetical scenarios and recent actions","Poor insight is common in schizophrenia and mania."],
+["Concept","Core clinical interviewing skills","Open-ended questions, reflection, validation, summarizing, silence, empathy, avoiding leading or ‘why’ questions","Start open, then narrow to closed questions for specifics."],
+["Mnemonic","OARS in motivational interviewing","Open-ended questions, Affirmations, Reflective listening, Summaries","Goal: elicit change talk (DARN-CAT: desire, ability, reasons, need; commitment, activation, taking steps)."],
+["Concept","Spirit and principles of motivational interviewing","Partnership, acceptance, compassion, evocation; roll with resistance; avoid the righting reflex; support self-efficacy","Sustain talk and discord signal a mismatch with the patient’s stage of change."],
+["Concept","Components of the psychiatric history","Chief complaint, HPI, past psychiatric history, substance use, medical history, medications, family, developmental and social history, trauma, legal, strengths","Always obtain collateral information when the patient cannot give a reliable history."],
+["Guideline","Suicide risk factors and strongest predictors","Previous attempt (strongest), current plan and intent, access to lethal means (firearms), hopelessness, recent discharge, substance use, male sex, older age, social isolation","Women attempt more often; men die more often. Protective: connectedness, reasons for living, treatment engagement."],
+["Guideline","Tools for suicide risk","Columbia Suicide Severity Rating Scale (C-SSRS), ASQ (youth screen), SAFE-T, Stanley-Brown Safety Plan","No-suicide contracts are not effective; use a collaborative safety plan with lethal means counseling instead."],
+["Guideline","Violence risk assessment","Past violence is the best predictor; also substance use, command hallucinations, access to weapons, threats, and impulsivity (HCR-20 is a structured tool)","A specific threat against an identifiable person triggers duty to warn or protect."],
+["Guideline","Criteria for involuntary psychiatric hold","Mental illness plus danger to self, danger to others, or gravely disabled (unable to meet basic needs)","Specific hold durations and procedures vary by state; use the least restrictive alternative."],
+["Guideline","De-escalation of an agitated patient","Calm approach, personal space, clear short statements, offer choices, quiet environment, offer oral medication before IM; restraint only as a last resort","Seclusion/restraint needs a face-to-face evaluation within 1 hour and time-limited orders (4 hours adults, 2 hours ages 9–17, 1 hour under 9)."],
+["Guideline","Four abilities that make up decision-making capacity","Understand the information, appreciate its relevance to oneself, reason about options, express a choice","Capacity is decision-specific and can fluctuate; clinicians assess it, courts determine competence."],
+["Red flag","Catatonia","Stupor, mutism, negativism, posturing, waxy flexibility, echolalia, echopraxia, stereotypy, agitation","Lorazepam challenge (1–2 mg IV/IM); ECT if refractory. Screen with the Bush-Francis scale. Avoid antipsychotics when possible."],
+["Concept","Delirium vs dementia vs psychosis","Delirium: acute, fluctuating, inattention, visual hallucinations, reversible. Dementia: gradual, memory loss, attention intact early. Psychosis: intact consciousness, delusions or auditory hallucinations","Evaluate for infection, drugs, metabolic causes, urinary retention and withdrawal."],
+["Concept","Medical conditions that mimic psychiatric illness","Hypothyroidism (depression), hyperthyroidism (anxiety, mania), B12 deficiency, Cushing, pheochromocytoma, SLE, HIV, neurosyphilis, Wilson disease, temporal lobe epilepsy, brain tumor","New psychiatric symptoms after age 40–50 need a medical work-up."],
+["Guideline","Indications for neuroimaging in psychiatry","First episode of psychosis or mania, new cognitive decline, focal neurologic signs, new symptoms after age 50, head injury, atypical presentation","MRI is preferred over CT when available."]
+]);
+
+D("Screening Tools", [
+["Lab","PHQ-9 interpretation","0–4 minimal; 5–9 mild; 10–14 moderate; 15–19 moderately severe; 20–27 severe; item 9 asks about self-harm thoughts","PHQ-2 screen is positive at 3 or more; a PHQ-9 score of 10 or more suggests major depression."],
+["Lab","GAD-7 interpretation","0–4 minimal; 5–9 mild; 10–14 moderate; 15–21 severe; 10 or more is the usual cutoff for further evaluation","Also screens for panic, social anxiety and PTSD."],
+["Lab","Edinburgh Postnatal Depression Scale (EPDS)","10 questions, maximum 30; a score of 10 or more suggests possible depression and 13 or more probable depression; item 10 asks about self-harm","Use during pregnancy and the first postpartum year."],
+["Lab","Mood Disorder Questionnaire (MDQ)","Screens for bipolar disorder: 7 or more positive of 13 symptoms, several clustered at the same time, and moderate or serious impairment","Use before starting an antidepressant. Young Mania Rating Scale (YMRS) tracks severity."],
+["Lab","Vanderbilt, Conners and ASRS","Vanderbilt (parent and teacher) and Conners screen children for ADHD; ASRS screens adults","Rating scales support but do not replace clinical assessment."],
+["Lab","Y-BOCS severity","0–7 subclinical; 8–15 mild; 16–23 moderate; 24–31 severe; 32–40 extreme","Tracks OCD treatment response."],
+["Lab","PTSD screening and assessment tools","PC-PTSD-5 (positive at 3 or more), PCL-5 (self-report, severity), CAPS-5 (clinician-administered gold standard)","Use trauma-informed language and screen for safety first."],
+["Lab","Alcohol and substance screening tools","AUDIT, AUDIT-C, CAGE, CIWA-Ar (alcohol withdrawal severity), DAST-10, CRAFFT (adolescents; 2 or more is high risk), COWS (opioid withdrawal)","CAGE: Cut down, Annoyed, Guilty, Eye-opener; 2 or more positive suggests a problem."],
+["Lab","Involuntary movement scales","AIMS (Abnormal Involuntary Movement Scale) and DISCUS for tardive dyskinesia","Do at baseline and every 6–12 months on antipsychotics (every 3–6 months in high-risk patients)."],
+["Lab","Cognitive screens","MMSE (≤ 24 suggests impairment), MoCA (< 26), Mini-Cog (3-word recall plus clock draw), SLUMS, CAM (delirium), clock drawing","MoCA is better for executive and early impairment; MMSE is affected by education and language."],
+["Lab","Geriatric depression screening","Geriatric Depression Scale (GDS-15): score above 5 suggests depression","Avoids somatic items that overlap with medical illness."],
+["Lab","Clinician-rated depression and anxiety scales","HAM-D and MADRS (depression), HAM-A (anxiety), BPRS and PANSS (psychosis severity)","Used in research and to track response."],
+["Lab","Child and adolescent tools","M-CHAT-R/F (autism, 16–30 months), PHQ-A, SCARED (anxiety), CDI (depression), SDQ and Pediatric Symptom Checklist, ASQ (suicide)","M-CHAT is a screening tool, not diagnostic; ADOS-2 and ADI-R support diagnosis."],
+["Lab","Eating disorder and sleep screens","SCOFF (eating disorders), Epworth Sleepiness Scale (> 10 is excessive), Insomnia Severity Index, STOP-BANG (sleep apnea)","Sleep logs help in insomnia and circadian disorders."],
+["Lab","Trauma and adversity screen","Adverse Childhood Experiences (ACEs) questionnaire","Higher ACE scores predict depression, substance use and chronic illness."],
+["Lab","WHODAS 2.0 and DSM-5-TR dimensional measures","WHODAS 2.0 measures disability across six domains; Cross-Cutting Symptom Measures screen across diagnoses","DSM-5-TR removed the GAF score."]
+]);
+
+D("Physical Assessment and Labs", [
+["Lab","Baseline labs before psychotropics","CBC, CMP (renal, liver, sodium, glucose), TSH, lipids, A1c, pregnancy test, urine drug screen; B12, folate, vitamin D, HIV and RPR as indicated","Add ECG for QTc-prolonging drugs, TCAs and cardiac risk."],
+["Lab","ECG and QTc interpretation","QTc is prolonged above about 450 ms (men) or 460 ms (women); above 500 ms or an increase of 60 ms carries high risk for torsades","Correct potassium and magnesium; avoid stacking QT-prolonging drugs (citalopram, ziprasidone, methadone, haloperidol)."],
+["Lab","Prolactin and antipsychotics","Check prolactin with symptoms (amenorrhea, galactorrhea, sexual dysfunction) and rule out pregnancy, hypothyroidism and pituitary tumor","Switch to aripiprazole or lower the dose if elevated."],
+["Lab","Hyponatremia in psychiatry","SIADH from SSRIs, SNRIs, carbamazepine and oxcarbazepine; psychogenic polydipsia in schizophrenia","Sodium below 125 can cause seizures; treat the cause."],
+["Lab","Thyroid testing in mood disorders","TSH is the screening test; lithium can cause hypothyroidism; hyperthyroidism mimics anxiety or mania","Hypothyroidism can cause treatment-resistant depression and rapid cycling."],
+["Lab","B12 and folate deficiency","Cause cognitive decline, depression and psychosis; check B12 and methylmalonic acid; metformin and PPIs lower B12","Folate deficiency has no neurologic findings; B12 does (neuropathy, ataxia)."],
+["Lab","Liver tests and psychotropics","Baseline LFTs for valproate, carbamazepine, duloxetine, naltrexone and nefazodone; repeat if symptomatic","Hepatic metabolism is reduced in cirrhosis; LOT benzodiazepines are safer."],
+["Lab","Renal function and psychotropics","Lithium, gabapentin, pregabalin, paliperidone, acamprosate and desvenlafaxine need renal dose adjustment","Older adults have lower clearance despite a normal creatinine."],
+["Lab","Monitoring for eating disorders","Vitals (bradycardia, hypotension, orthostasis), electrolytes (hypokalemia, hypophosphatemia, hypomagnesemia), ECG, glucose","Refeeding syndrome: hypophosphatemia, hypokalemia and hypomagnesemia on restarting nutrition."],
+["Physical exam","Neurologic exam elements for psychiatric prescribers","Cranial nerves, gait and Romberg, tone and rigidity, tremor, reflexes, clonus, abnormal movements","Fine tremor with lithium is expected; coarse tremor suggests toxicity."],
+["Physical exam","Vital sign checks that guide psychotropic safety","Orthostatic BP (antipsychotics, TCAs, trazodone), pulse (beta-blockers, clozapine), temperature (NMS, serotonin syndrome), BP (stimulants, venlafaxine, MAOIs)","Fever with rigidity or clonus is an emergency."],
+["Concept","Anticholinergic toxicity picture","Hot (fever), dry, red, blind (mydriasis), mad (delirium), full bladder, tachycardia","Treat with supportive care; physostigmine only in severe cases without QRS prolongation."],
+["Lab","Genetic tests with psychiatric relevance","22q11.2 deletion (psychosis, congenital heart disease, hypocalcemia), Fragile X (intellectual disability, autism), Huntington (CAG repeats), HLA-B*15:02","Test when physical features or family history suggest."],
+["Lab","EEG findings in psychiatry","Diffuse slowing in delirium; triphasic waves in hepatic encephalopathy; periodic sharp waves in Creutzfeldt–Jakob disease","EEG helps distinguish seizures from psychogenic events."]
+]);
+
+D("Depressive and Bipolar Disorders", [
+["Mnemonic","DSM-5-TR major depressive episode (SIG E CAPS)","Five or more symptoms in 2 weeks including depressed mood or anhedonia: Sleep, Interest, Guilt, Energy, Concentration, Appetite, Psychomotor change, Suicidal ideation","Rule out substance, medical causes, bipolar disorder and normal bereavement."],
+["Concept","Major depressive disorder specifiers","Anxious distress, mixed features, melancholic, atypical, psychotic, catatonia, peripartum onset, seasonal pattern","Atypical features (reactive mood, hypersomnia, weight gain, leaden paralysis, rejection sensitivity) respond to SSRIs and MAOIs."],
+["Concept","Persistent depressive disorder","Depressed mood most of the day for at least 2 years in adults (1 year in children and adolescents)","Double depression: a major episode on top of dysthymia."],
+["Concept","Disruptive mood dysregulation disorder (DMDD)","Severe recurrent temper outbursts (about 3 or more times weekly) with persistently irritable mood between; onset before age 10; diagnosed at ages 6–18; lasts 12 months or more","Replaces pediatric bipolar disorder for chronic irritability; treat with CBT and parent training."],
+["Concept","Premenstrual dysphoric disorder","Mood symptoms in the week before menses that remit after onset; SSRIs (continuous or luteal), drospirenone-containing contraceptives","Document symptoms prospectively for 2 cycles."],
+["Concept","Bipolar I vs II vs cyclothymia","Bipolar I: manic episode of 7 days or more (or any duration if hospitalized). Bipolar II: hypomania of 4 days or more plus major depression. Cyclothymia: 2 years of subthreshold symptoms","Rapid cycling: 4 or more episodes in 12 months."],
+["Mnemonic","DIG FAST for mania","Distractibility, Indiscretion, Grandiosity, Flight of ideas, Activity increase, Sleep decreased, Talkativeness","Need 3 symptoms (4 if mood is only irritable) plus marked impairment."],
+["Guideline","Treatment of acute mania","Lithium or valproate with or without a second-generation antipsychotic; short-term benzodiazepine for agitation; stop antidepressants","Atypical antipsychotics act fastest; ECT for severe or refractory mania."],
+["Guideline","Treatment of bipolar depression","Quetiapine, lurasidone, cariprazine, lumateperone, or olanzapine–fluoxetine; lamotrigine or lithium for maintenance","Avoid antidepressant monotherapy because it can trigger mania or rapid cycling."],
+["Guideline","Psychotic depression","Antidepressant plus an antipsychotic, or ECT","High suicide risk; ECT has the highest response rate."],
+["Concept","Peripartum depression and psychosis","Baby blues: days 2–3, resolve by 2 weeks. Postpartum depression: lasts more than 2 weeks; screen with EPDS. Postpartum psychosis: onset within days to 2 weeks, delusions and confusion, often bipolar","Psychosis is an emergency (risk of infanticide and suicide); admit and treat with mood stabilizer and antipsychotic."],
+["Concept","Prolonged grief disorder (DSM-5-TR)","Intense yearning or preoccupation with the deceased persisting at least 12 months in adults (6 months in children and adolescents)","Normal grief comes in waves with preserved self-esteem; depression is pervasive."],
+["Concept","Adjustment disorder","Emotional or behavioral symptoms within 3 months of a stressor; resolve within 6 months after the stressor ends","Treat with psychotherapy; medications are rarely needed."],
+["Concept","Late-life depression","Often presents with somatic complaints, anxiety, irritability or cognitive change (pseudodementia); high suicide rate in older white men","SSRIs are first-line; ECT is highly effective; monitor sodium."],
+["Concept","Beck’s cognitive triad and learned helplessness","Cognitive triad: negative views of self, world and future. Learned helplessness (Seligman): passive acceptance after uncontrollable stress","Basis for cognitive therapy and behavioral activation."],
+["Concept","Seasonal affective disorder","Recurrent depression with onset in fall or winter and remission in spring, with hypersomnia and carbohydrate craving","Light therapy and bupropion XL (started before fall) are options."]
+]);
+
+D("Anxiety, OCD and Trauma", [
+["Concept","Generalized anxiety disorder criteria","Excessive worry on most days for at least 6 months, hard to control, with 3 or more of: restlessness, fatigue, poor concentration, irritability, muscle tension, sleep disturbance (1 symptom in children)","First-line: SSRIs or SNRIs plus CBT; buspirone is an alternative; avoid long-term benzodiazepines."],
+["Concept","Panic disorder","Recurrent unexpected attacks that peak within minutes with 4 or more of 13 symptoms, followed by at least 1 month of worry or avoidance","CBT with interoceptive exposure and SSRIs; short-term benzodiazepines only as bridging."],
+["Concept","Social anxiety disorder","Marked fear of social scrutiny lasting 6 months or more; ‘performance only’ specifier","SSRIs or SNRIs plus CBT with exposure; propranolol for isolated performance anxiety."],
+["Concept","Specific phobia and agoraphobia","Specific phobia: fear of an object or situation. Agoraphobia: fear of 2 or more situations (transit, open spaces, enclosed places, crowds, being alone outside)","Exposure therapy (systematic desensitization, flooding) is first-line."],
+["Concept","Separation anxiety and selective mutism","Separation anxiety: 4 weeks or more in children and 6 months or more in adults. Selective mutism: failure to speak in specific social settings for at least 1 month despite speaking elsewhere","Do not count the first month of school for selective mutism."],
+["Guideline","Treatment of pediatric anxiety disorders","SSRI plus CBT is more effective than either alone (CAMS study)","Monitor suicidality with SSRIs."],
+["Concept","Obsessive-compulsive disorder","Obsessions and/or compulsions taking over 1 hour daily or causing impairment; specifiers for insight and tic-related","Exposure and response prevention (ERP) plus SSRI at higher doses for 8–12 weeks; clomipramine is an alternative; augment with an antipsychotic."],
+["Concept","OCD-related disorders","Hoarding disorder, body dysmorphic disorder, trichotillomania, excoriation (skin-picking)","Habit reversal training is first-line for trichotillomania and excoriation; SSRIs for BDD."],
+["Concept","PANDAS/PANS","Abrupt onset of OCD or tics after streptococcal infection (PANDAS) or other trigger (PANS)","Treat infection; standard OCD care."],
+["Concept","Tourette disorder","2 or more motor tics and 1 or more vocal tic for over 1 year with onset before age 18","Comprehensive behavioral intervention for tics (CBIT) first; aripiprazole, risperidone, alpha-2 agonists."],
+["Concept","PTSD criteria (DSM-5-TR)","Exposure to trauma plus intrusion, avoidance, negative mood or cognition, and arousal symptoms lasting more than 1 month","Acute stress disorder: 3 days to 1 month."],
+["Guideline","PTSD treatment","Trauma-focused psychotherapy (prolonged exposure, cognitive processing therapy, EMDR) first-line; sertraline, paroxetine or venlafaxine; prazosin for nightmares has mixed evidence","Avoid benzodiazepines because they can worsen outcomes."],
+["Concept","Trauma and stressor-related childhood disorders","Reactive attachment disorder (inhibited, emotionally withdrawn) and disinhibited social engagement disorder (indiscriminate familiarity)","Both stem from neglect; treat with caregiver stability and attachment-focused therapy."],
+["Concept","Dissociative disorders","Dissociative identity disorder (two or more identity states), dissociative amnesia, depersonalization/derealization disorder","Reality testing stays intact; trauma history is common."],
+["Concept","Medical mimics of anxiety","Hyperthyroidism, pheochromocytoma, hypoglycemia, arrhythmia, caffeine and stimulant use, withdrawal, asthma","Rule out cardiac causes before diagnosing panic."],
+["Concept","Illness anxiety vs somatic symptom disorder","Illness anxiety: preoccupation with having a serious illness with minimal symptoms. Somatic symptom disorder: distressing symptoms with excessive thoughts and behaviors lasting more than 6 months","Regular scheduled visits and CBT; limit unnecessary testing."]
+]);
+
+D("Psychotic Disorders", [
+["Concept","DSM-5-TR criteria for schizophrenia","2 or more of delusions, hallucinations, disorganized speech, grossly disorganized or catatonic behavior, negative symptoms (at least one must be the first three) for 1 month, with continuous signs for 6 months and functional decline","Brief psychotic disorder: 1 day to less than 1 month. Schizophreniform: 1–6 months."],
+["Concept","Schizoaffective disorder","Psychosis for 2 weeks or more without a mood episode, plus a major mood episode present for most of the illness","If mood symptoms are brief, think schizophrenia; if psychosis only occurs during mood episodes, think a mood disorder with psychotic features."],
+["Concept","Delusional disorder","One or more delusions for at least 1 month without other psychotic symptoms; functioning is relatively preserved","Subtypes: persecutory, jealous, erotomanic, grandiose, somatic. Shared delusion (folie à deux)."],
+["Concept","Positive, negative and cognitive symptoms of schizophrenia","Positive: delusions, hallucinations, disorganization. Negative: alogia, affective flattening, anhedonia, avolition, asociality. Cognitive: impaired attention, memory, executive function","Antipsychotics treat positive symptoms best; negative and cognitive symptoms predict function."],
+["Concept","Course and risk factors of schizophrenia","Onset in late teens to early 20s (men) and later in women; risk: family history, prenatal infection, cannabis use, urban birth, 22q11.2 deletion","Early treatment improves outcomes; coordinated specialty care for first episode."],
+["Guideline","Psychosocial treatment of schizophrenia","Family psychoeducation (reduces expressed emotion), assertive community treatment, supported employment (IPS), cognitive remediation, social skills training, CBT for psychosis","Medication plus psychosocial treatment prevents relapse."],
+["Guideline","Maintenance antipsychotic treatment","Continue for at least 1–2 years after a first episode, longer or indefinitely after repeated relapse; LAIs when adherence is poor","Stopping medication is the leading cause of relapse."],
+["Concept","Substance-induced psychosis","Cannabis, stimulants, hallucinogens, PCP, alcohol withdrawal; usually resolves within about a month of abstinence","Persistent symptoms suggest a primary psychotic disorder."],
+["Concept","Psychosis in older adults","New psychosis after 50: think delirium, dementia (Lewy body), Parkinson disease, stroke, medication, B12 deficiency","Lewy body dementia: severe sensitivity to antipsychotics; avoid haloperidol."],
+["Concept","Schizotypal, schizoid and paranoid personality disorders","Cluster A: odd or eccentric; schizotypal has magical thinking and odd beliefs; schizoid prefers solitude; paranoid is pervasively suspicious","They lack frank psychosis; schizotypal is on the schizophrenia spectrum."]
+]);
+
+D("Child and Adolescent", [
+["Concept","Autism spectrum disorder (DSM-5-TR)","Persistent deficits in social communication (3 domains) and at least 2 restricted, repetitive behaviors, present in early development; severity levels 1–3 by support needed","Screen with M-CHAT-R/F at 18 and 24 months; early behavioral intervention (ABA, speech, OT); risperidone or aripiprazole only for irritability."],
+["Concept","Intellectual disability","Deficits in intellectual and adaptive functioning with onset in the developmental period; severity is based on adaptive functioning, not IQ alone","IQ about 70 or below is a guide, not a cutoff."],
+["Concept","Oppositional defiant disorder vs conduct disorder","ODD: angry or irritable mood, argumentative or vindictive behavior for 6 months or more. Conduct disorder: 3 or more of 15 behaviors (aggression, destruction, deceit, rule violations) in 12 months","Treat with parent management training; conduct disorder before age 10 has a worse prognosis. Antisocial personality disorder needs age 18 or older."],
+["Concept","Elimination and communication disorders","Enuresis (age 5 or older, twice weekly for 3 months), encopresis (age 4 or older), childhood-onset fluency disorder (stuttering), language disorder","Rule out medical causes; behavioral and alarm therapy for enuresis."],
+["Drug","FDA-approved psychotropics for youth (selected)","Fluoxetine MDD age 8 or older, escitalopram MDD age 12 or older; sertraline OCD age 6 or older; fluvoxamine OCD age 8 or older; lithium bipolar age 7 or older; aripiprazole bipolar age 10 or older; lurasidone bipolar depression age 10 or older","Know the boxed warning for suicidality up to age 24."],
+["Guideline","Child maltreatment and trauma-informed screening","Screen for ACEs, injuries, neglect and exposure to violence; every clinician is a mandated reporter","Report suspected abuse; proof is not required."],
+["Concept","Anorexia nervosa in adolescents","Family-based treatment (Maudsley) is first-line; medical admission for bradycardia, hypotension, electrolyte problems or low weight","Olanzapine may help weight gain adjunctively; watch for refeeding syndrome."],
+["Concept","Nonsuicidal self-injury and suicide in adolescents","NSIS is a risk factor for later suicide; screen with ASQ; treat with DBT-A or CBT; safety plan and means restriction","LGBTQ youth face higher suicide risk."],
+["Concept","Gender dysphoria","Marked incongruence between experienced and assigned gender for 6 months or more with distress or impairment","Use affirming, developmentally appropriate care and involve family; the diagnosis addresses distress, not identity."],
+["Concept","Pediatric psychopharmacology principles","Start low and go slow; target single symptoms; combine with psychotherapy; monitor weight, BP and movements","Use SSRIs with close suicide monitoring."],
+["Concept","School accommodations and rights","IDEA provides special education with an IEP; Section 504 provides accommodations without special education","The clinician documents need; the school team decides eligibility."]
+]);
+
+D("Personality, Eating and Somatic Disorders", [
+["Concept","Personality disorder clusters","Cluster A (odd): paranoid, schizoid, schizotypal. Cluster B (dramatic): antisocial, borderline, histrionic, narcissistic. Cluster C (anxious): avoidant, dependent, obsessive-compulsive","Obsessive-compulsive personality disorder lacks true obsessions or compulsions."],
+["Concept","Borderline personality disorder criteria","5 of 9: fear of abandonment, unstable relationships, identity disturbance, impulsivity, suicidal or self-harm behavior, affective instability, emptiness, intense anger, transient paranoia or dissociation","Dialectical behavior therapy is first-line; no FDA-approved medication; avoid benzodiazepines."],
+["Concept","DBT components","Skills groups (mindfulness, distress tolerance, emotion regulation, interpersonal effectiveness), individual therapy, phone coaching, therapist consultation team","Core stance: dialectics of acceptance and change (Linehan)."],
+["Concept","Defense mechanisms by maturity","Mature: sublimation, humor, altruism, suppression. Neurotic: repression, reaction formation, displacement, intellectualization, undoing. Immature: splitting, projection, denial, acting out, projective identification, regression","Splitting is typical of borderline personality disorder."],
+["Concept","Anorexia nervosa criteria","Restricted intake with low weight, intense fear of weight gain and disturbed body image; restricting or binge-purging type","Medical emergencies: HR < 40, hypotension, electrolyte disorders. Refeeding syndrome risk."],
+["Concept","Bulimia nervosa","Binge eating and compensatory behavior at least once weekly for 3 months with weight-based self-evaluation; normal weight common","Fluoxetine 60 mg plus CBT-E; avoid bupropion (seizures). Findings: Russell sign, parotid swelling, hypokalemic alkalosis."],
+["Concept","Binge-eating disorder","Recurrent binge eating at least once weekly for 3 months with distress and no compensatory behavior","Lisdexamfetamine and CBT are first-line options."],
+["Concept","ARFID, pica and rumination disorder","ARFID: avoidance or restriction without body image concerns; pica: eating nonfood substances for 1 month or more; rumination: repeated regurgitation","Check for iron or zinc deficiency and lead in pica."],
+["Concept","Somatic symptom and related disorders","Somatic symptom disorder, illness anxiety disorder, functional neurological symptom disorder (conversion), factitious disorder, psychological factors affecting medical illness","Factitious disorder: deception without external gain; malingering: deception for external gain."],
+["Concept","Functional neurological symptom disorder","Neurologic symptoms inconsistent with known disease; Hoover sign; ‘la belle indifférence’ is not reliable","Treat with explanation, physical therapy and CBT."],
+["Concept","Impulse-control and disruptive disorders","Intermittent explosive disorder (verbal outbursts twice weekly for 3 months), kleptomania, pyromania","SSRIs and CBT for IED."],
+["Concept","Sexual dysfunction and paraphilic disorders","Dysfunctions: erectile disorder, delayed ejaculation, female sexual interest/arousal disorder; SSRIs commonly cause delayed orgasm. Paraphilic disorder needs distress or harm and 6 months","Rule out medical and medication causes first."],
+["Concept","Insomnia and hypersomnolence disorders","Insomnia disorder: 3 nights weekly for 3 months with daytime impairment","CBT-I is first-line."]
+]);
+
+D("Neurocognitive and Geriatric", [
+["Concept","Major vs mild neurocognitive disorder","Major: significant cognitive decline that interferes with independence. Mild: modest decline, independence preserved","Delirium has acute onset and fluctuating attention."],
+["Drug","Alzheimer disease medications","Cholinesterase inhibitors (donepezil, rivastigmine, galantamine) for mild to moderate; memantine for moderate to severe; anti-amyloid antibodies (lecanemab, donanemab) for early disease","Anti-amyloid drugs need MRI monitoring for ARIA (brain swelling or bleeding); APOE e4 homozygotes are at highest risk."],
+["Concept","Dementia types and distinguishing features","Alzheimer: memory first. Vascular: stepwise decline. Lewy body: fluctuations, visual hallucinations, parkinsonism, REM sleep behavior disorder. Frontotemporal: early personality change or aphasia. Normal pressure hydrocephalus: wet, wobbly, wacky","Avoid antipsychotics (especially haloperidol) in Lewy body dementia."],
+["Concept","Huntington disease and Creutzfeldt–Jakob","Huntington: autosomal dominant CAG repeat on chromosome 4, chorea, depression and dementia. CJD: rapidly progressive dementia with myoclonus and periodic sharp waves","Genetic counseling for Huntington."],
+["Guideline","Behavioral and psychological symptoms of dementia","Look for pain, infection, constipation and drugs; nonpharmacologic strategies first; antipsychotics only for severe distress with a boxed warning discussion; SSRIs (citalopram) for agitation","Brexpiprazole is approved for agitation in Alzheimer dementia."],
+["Guideline","Delirium prevention and treatment","Treat the cause; reorient; sleep, hydration, vision and hearing aids; low-dose haloperidol only for severe agitation","Avoid benzodiazepines unless alcohol or sedative withdrawal."],
+["Concept","Beers Criteria psychiatric examples","Avoid benzodiazepines, Z-drugs, first-generation antihistamines, strongly anticholinergic drugs (paroxetine, TCAs), and antipsychotics in dementia","The list also warns against combining 3 or more CNS-active drugs."],
+["Concept","Suicide and substance use in older adults","Highest suicide rate in older white men; ask about firearms; alcohol and benzodiazepine misuse are underrecognized","Treat depression and chronic pain; lethal means counseling."],
+["Guideline","Psychotropic dosing in older and frail adults","Start low, go slow; reduce doses for renal and hepatic decline; review polypharmacy; watch for falls, hyponatremia and orthostasis","Lorazepam, oxazepam and temazepam are less affected by age than long-acting benzodiazepines."],
+["Concept","Capacity, proxies and elder abuse in older adults","Assess decision-making capacity for each decision; use health care proxy and advance directives","Report suspected elder abuse to Adult Protective Services."]
+]);
+
+D("Psychotherapy and Theories", [
+["Concept","Cognitive behavioral therapy (CBT)","Beck’s model: thoughts, feelings and behaviors interact; techniques: Socratic questioning, thought records, behavioral activation, exposure, homework","Collaborative empiricism; structured and time-limited; evidence for depression, anxiety, OCD, PTSD, insomnia."],
+["Concept","Cognitive distortions","Catastrophizing, all-or-nothing thinking, overgeneralization, mind reading, emotional reasoning, personalization, should statements, mental filter","Name the distortion, test it, then reframe."],
+["Concept","Classical vs operant conditioning","Classical (Pavlov): pairing stimuli. Operant (Skinner): consequences shape behavior; positive and negative reinforcement increase behavior; punishment decreases; extinction removes reinforcement","Variable-ratio schedules are the most resistant to extinction; Bandura: observational learning."],
+["Concept","Exposure-based behavioral techniques","Systematic desensitization (Wolpe: relaxation plus graded hierarchy), flooding (intense exposure), exposure and response prevention","Use graded exposure with informed consent."],
+["Concept","Interpersonal therapy (IPT)","Time-limited (12–16 weeks) therapy for depression focusing on four problem areas: grief, role disputes, role transitions, interpersonal deficits","Useful for adolescents, perinatal and late-life depression."],
+["Concept","Acceptance and commitment therapy and mindfulness-based approaches","ACT: acceptance, cognitive defusion, values and committed action for psychological flexibility. MBCT prevents relapse in recurrent depression","Mindfulness means nonjudgmental present-moment awareness."],
+["Concept","Psychodynamic concepts","Transference, countertransference, resistance, free association, interpretation, defense mechanisms; Freud’s id, ego, superego","The unconscious motivates behavior; transference is the patient’s feelings toward the therapist."],
+["Concept","Humanistic and person-centered therapy","Rogers: unconditional positive regard, empathy, congruence (genuineness); Maslow’s hierarchy of needs","The therapeutic relationship is the agent of change."],
+["Concept","Brief therapies","Solution-focused (miracle question, exceptions, scaling), supportive psychotherapy, crisis intervention","Crisis intervention is short-term and focuses on safety, coping and support."],
+["Concept","Crisis theory","Caplan and Aguilera: a crisis results when a stressor overwhelms coping; balancing factors are realistic perception, situational support and coping mechanisms","Assess safety first, then strengthen support."],
+["Concept","Group therapy","Ideal size 5–10; Yalom’s curative factors include universality, hope, information, altruism, corrective recapitulation of the family, socializing, imitation, interpersonal learning, cohesion, catharsis, existential factors","Group stages (Tuckman): forming, storming, norming, performing, adjourning."],
+["Concept","Family therapy models","Bowen (differentiation of self, triangulation), structural (Minuchin: boundaries, enmeshment, disengagement), strategic (Haley), narrative (externalizing the problem), Satir (communication stances)","A genogram maps family patterns across generations."],
+["Concept","Trauma-informed care principles (SAMHSA)","Safety; trustworthiness and transparency; peer support; collaboration and mutuality; empowerment, voice and choice; cultural, historical and gender issues","Ask ‘what happened to you?’ instead of ‘what is wrong with you?’"],
+["Concept","Peplau’s phases of the nurse–patient relationship","Orientation, identification, exploitation (working), resolution (termination)","Peplau’s nurse roles include stranger, resource, teacher, leader, surrogate and counselor."],
+["Concept","Boundary crossings vs violations","Crossing: benign, may help (brief hug at a funeral). Violation: harms the patient (sexual contact, financial exploitation)","Sexual contact with current patients is never acceptable; many boards extend it to former patients."],
+["Concept","Transtheoretical Model (stages of change)","Precontemplation, contemplation, preparation, action, maintenance (relapse may occur)","Match interventions to the stage; motivational interviewing for early stages."],
+["Concept","Lewin’s change theory","Unfreezing, changing (moving), refreezing","Force-field analysis weighs driving and restraining forces."],
+["Concept","Recovery model","Recovery is a process of improved health, home, purpose and community; person-driven, strengths-based and hope-focused; peer support is central","Wellness Recovery Action Plan (WRAP) is a self-management tool."],
+["Concept","Evidence-based therapies for children","Parent management training, parent–child interaction therapy (ages 2–7), CBT, family-based treatment, play therapy","Parent involvement is critical for young children."],
+["Concept","Relaxation and mind-body techniques","Progressive muscle relaxation (Jacobson), diaphragmatic breathing, biofeedback, guided imagery, yoga","Useful adjuncts for anxiety and insomnia."]
+]);
+
+D("Development and Family Theories", [
+["Concept","Piaget’s stages of cognitive development","Sensorimotor (0–2), preoperational (2–7), concrete operational (7–11), formal operational (12 and older)","Object permanence develops in the sensorimotor stage."],
+["Concept","Erikson’s psychosocial stages","Trust vs mistrust, autonomy vs shame, initiative vs guilt, industry vs inferiority, identity vs role confusion, intimacy vs isolation, generativity vs stagnation, integrity vs despair","Adolescents face identity vs role confusion."],
+["Concept","Freud’s psychosexual stages","Oral, anal, phallic (Oedipal), latency, genital","Fixation at a stage is thought to cause later personality traits."],
+["Concept","Kohlberg’s moral development","Preconventional (avoiding punishment), conventional (law and order), postconventional (universal principles)","Most adults reach the conventional level."],
+["Concept","Attachment theory","Bowlby: attachment is adaptive. Ainsworth’s Strange Situation: secure, avoidant, ambivalent/resistant, disorganized","Disorganized attachment is linked to abuse and neglect."],
+["Concept","Thomas and Chess temperament types","Easy (about 40%), difficult (about 10%), slow-to-warm-up (about 15%)","Goodness of fit between child and parent predicts adjustment."],
+["Concept","Baumrind’s parenting styles","Authoritative (warm and firm; best outcomes), authoritarian, permissive, neglectful","Parent management training builds authoritative skills."],
+["Concept","Mahler and Sullivan","Mahler: separation-individuation (autism, symbiosis, differentiation, practicing, rapprochement, object constancy). Sullivan: interpersonal theory; anxiety arises in relationships","Rapprochement is a toddler’s push and pull between independence and dependence."],
+["Concept","Kübler-Ross stages of grief and Worden’s tasks","Denial, anger, bargaining, depression, acceptance; Worden: accept the loss, process the pain, adjust, maintain a connection","Stages are not linear."],
+["Concept","Maslow’s hierarchy of needs","Physiologic, safety, love and belonging, esteem, self-actualization","Meet lower needs first when assessing a patient."]
+]);
+
+D("Ethics and Legal Principles", [
+["Concept","Core ethical principles","Autonomy, beneficence, nonmaleficence, justice, fidelity, veracity","A capable patient may refuse treatment; involuntary treatment must be the least restrictive alternative."],
+["Concept","Elements of informed consent","Disclosure of diagnosis, risks, benefits and alternatives; decision-making capacity; voluntary choice","Document the discussion; the prescriber obtains consent, not a witness."],
+["Concept","Capacity vs competence","Capacity: clinician’s decision-specific judgment. Competence: legal determination by a court","Assess capacity again if the patient’s condition changes."],
+["Concept","Substitute decision-making","Advance psychiatric directive, health care proxy, guardian; substituted judgment (what the patient would want) before best interest","Use the least restrictive form of guardianship."],
+["Concept","Tarasoff duty","Duty to warn or protect an identifiable person from a serious threat of violence; state laws vary (duty to warn, protect, or permissive)","Document risk assessment and actions; follow state law."],
+["Concept","HIPAA and confidentiality","PHI may be shared for treatment, payment and operations without authorization; psychotherapy notes have extra protection; minimum necessary standard","42 CFR Part 2 gives stricter protection to substance use treatment records."],
+["Concept","Exceptions to confidentiality","Imminent danger to self or others, child or elder abuse, court order, reportable disease, medical emergency","Tell patients the limits of confidentiality at the start."],
+["Concept","Mandatory reporting","Suspected child abuse, elder or dependent adult abuse, and certain infectious diseases","Report reasonable suspicion; you are immune from liability if reported in good faith."],
+["Concept","Minors and consent","Parents usually consent; emancipated or mature minors and certain services (contraception, STI, substance use, outpatient mental health) vary by state","Know your state’s age of consent for mental health care."],
+["Concept","Four elements of malpractice","Duty, breach (dereliction), causation (direct cause), damages","The plaintiff must prove all four."],
+["Concept","Involuntary treatment and the right to refuse","Emergency treatment is allowed to prevent harm; competent patients can generally refuse medication (Rennie v. Klein; Rogers v. Okin); a court may authorize treatment","Document the emergency and reassess often."],
+["Concept","Landmark mental health legal cases","O’Connor v. Donaldson (cannot confine a non-dangerous person who can survive safely); Addington v. Texas (clear and convincing evidence for civil commitment); Olmstead v. L.C. (community integration); Jaffee v. Redmond (psychotherapist–patient privilege)","Know the principle behind each case."],
+["Concept","Insanity defense vs competency to stand trial","Insanity (M’Naghten rule): at the time of the act the person did not know the nature or wrongfulness of the act. Competency (Dusky): ability to understand proceedings and assist counsel","Competency concerns present state; insanity concerns state at the time of the offense."],
+["Concept","Restraint and seclusion rules","Use only for imminent danger when less restrictive measures fail; physician or APRN order; face-to-face evaluation within 1 hour; continuous observation; time-limited orders","Never use as punishment or for staff convenience."],
+["Concept","ANA Scope and Standards: Psychiatric-Mental Health Nursing","Practice standards follow the nursing process (assessment, diagnosis, outcomes, planning, implementation, evaluation); professional performance standards include ethics, advocacy, collaboration, leadership, quality","APRN implementation includes prescribing, psychotherapy and consultation."],
+["Concept","Off-label prescribing and documentation","Legal and common in psychiatry; explain the rationale, risks and alternatives and document","Follow evidence-based guidelines."],
+["Concept","Boundary and professional conduct issues","Avoid dual relationships, gifts, social media friending of patients and self-disclosure that serves your needs; report an impaired colleague","Document consultation on boundary questions."]
+]);
+
+D("Cultural Care and Advocacy", [
+["Concept","Cultural humility vs cultural competence","Humility: ongoing self-reflection and learning from patients, correcting power imbalances. Competence implies a finished skill set","Avoid stereotyping; ask about the patient’s own beliefs."],
+["Mnemonic","LEARN model","Listen, Explain, Acknowledge, Recommend, Negotiate","Ask the patient’s explanatory model of illness first."],
+["Concept","Cultural Formulation Interview (DSM-5-TR)","A 16-question tool covering cultural definition of the problem, perceived causes, coping, help-seeking and the clinician relationship","Use when culture affects diagnosis or treatment."],
+["Concept","Cultural concepts of distress","Ataque de nervios (Latino), taijin kyofusho (Japan), susto, dhat, khyal attacks, kufungisisa, shenjing shuairuo","They are not diagnoses but explanations of distress."],
+["Concept","Working with interpreters","Use a trained medical interpreter, not family or children; speak to the patient; brief the interpreter before","Document the interpreter’s identification number."],
+["Concept","Social determinants of mental health","Poverty, housing, education, discrimination, food insecurity, violence, access to care","Screen for needs and connect to resources."],
+["Concept","Sexual orientation and gender identity care","Use inclusive language and chosen names and pronouns; minority stress raises depression and suicide risk; conversion therapy is harmful and not supported","Gender-affirming care improves outcomes."],
+["Concept","Spiritual assessment tools","FICA (Faith, Importance, Community, Address) and HOPE","Spiritual beliefs may be protective or a source of distress."],
+["Concept","Health equity and implicit bias","Disparities in diagnosis (Black patients overdiagnosed with schizophrenia) and access; reflect on bias and use structured tools","Interpret behavior in cultural context."],
+["Concept","Patient advocacy: education and disability","IDEA/IEP and Section 504 for school accommodations; ADA for workplace accommodations; FMLA gives up to 12 weeks of unpaid job-protected leave","FMLA applies to employers with 50 or more employees and employees with 12 months of service."],
+["Concept","Mental health parity","The Mental Health Parity and Addiction Equity Act requires equal treatment limits for mental health and medical benefits","Appeal denials and support prior authorization requests."],
+["Concept","Refugee and immigrant mental health","High rates of PTSD, depression and adjustment problems; acculturative stress; trust and legal fears","Use trauma-informed care and interpreters."]
+]);
+
+D("CAM and Special Populations", [
+["Drug","St. John’s wort","CYP3A4 and P-glycoprotein inducer that lowers oral contraceptives, warfarin and cyclosporine; causes serotonin syndrome with SSRIs; photosensitivity","Not for use with other antidepressants."],
+["Drug","SAMe and omega-3 fatty acids","SAMe: possible mood benefit, can trigger mania. Omega-3 (EPA-rich): adjunct for depression; bleeding at high doses","Check for interactions with anticoagulants."],
+["Drug","Herbal sedatives","Valerian (insomnia), kava (hepatotoxicity), chamomile, passionflower, lavender oil (silexan) for anxiety","Kava has hepatotoxicity warnings."],
+["Drug","Melatonin, L-methylfolate and vitamin D","Melatonin for circadian disorders; L-methylfolate as adjunct for depression; vitamin D deficiency common in depression","Supplements are not FDA-regulated for efficacy; check quality."],
+["Concept","Exercise, yoga and acupuncture","Aerobic exercise has antidepressant effects; yoga and mindfulness reduce anxiety; acupuncture has limited evidence","Encourage as adjuncts, not replacements."],
+["Concept","Ketamine, psilocybin and MDMA status","Racemic ketamine is used off-label for resistant depression; esketamine is FDA approved; psilocybin is investigational; MDMA-assisted therapy was not approved by the FDA in 2024","Verify current status; these are not first-line."],
+["Guideline","Perinatal psychopharmacology","Sertraline and nortriptyline preferred for breastfeeding; avoid paroxetine, valproate; lamotrigine and lithium require level monitoring; untreated illness also harms the baby","Neonatal adaptation syndrome and a small risk of PPHN with late-pregnancy SSRI exposure."],
+["Guideline","Psychotropics in hepatic and renal disease","Hepatic: use LOT benzodiazepines, avoid valproate, duloxetine, nefazodone. Renal: avoid lithium in severe disease, reduce gabapentin, pregabalin, paliperidone","Check eGFR and LFTs."],
+["Guideline","Psychotropics in cardiac disease and epilepsy","Cardiac: sertraline preferred; avoid TCAs after MI and QTc-prolonging agents. Epilepsy: avoid bupropion, clozapine at high doses, TCAs","Treat seizure risk before starting medication."],
+["Guideline","Choosing psychotropics for comorbid conditions","Weight-neutral or loss: bupropion, aripiprazole, ziprasidone. Weight gain: olanzapine, mirtazapine, paroxetine. Pain: duloxetine, TCAs. Smoking: bupropion, varenicline","Match the side effect profile to the patient’s comorbidities."],
+["Red flag","Common psychiatric overdoses","TCA: widened QRS, give sodium bicarbonate. Lithium: dialysis. Acetaminophen: N-acetylcysteine. Opioids: naloxone. Benzodiazepines: supportive care (flumazenil rarely)","SSRIs are relatively safe in overdose."]
+]);
+
+
+const CARDS = RAW.map((c, i) => [...c, String(i + 1).padStart(3, '0')]);
+const $ = s => document.querySelector(s);
+const KEY = 'purityPmhnpFlashFull';
+let store = {}; try { store = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+store.m = store.m || {};
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} };
+const decks = ['All decks', ...new Set(CARDS.map(c => c[0]))];
+let deck = store.deck && decks.includes(store.deck) ? store.deck : 'All decks';
+let queue = [], pos = 0, got = 0, again = 0, missed = [], history = [];
+
+$('#sub').textContent = CARDS.length + ' cards in ' + (decks.length - 1) + ' decks • ANCC PMHNP-BC must-know facts';
+const mid = i => CARDS[i][5];
+function cardsIn(d, all){ return CARDS.map((c, i) => i).filter(i => (d === 'All decks' || CARDS[i][0] === d) && (all || !$('#onlyNew').checked || !store.m[mid(i)])); }
+function renderDecks(){
+  $('#deckSel').innerHTML = decks.map(d => '<option value="' + d + '"' + (d === deck ? ' selected' : '') + '>' + d + ' (' + cardsIn(d, true).length + ')</option>').join('');
+}
+$('#deckSel').onchange = () => { deck = $('#deckSel').value; store.deck = deck; save(); start(cardsIn(deck)); renderList(); };
+$('#onlyNew').onchange = () => { start(cardsIn(deck)); renderList(); };
+function mastery(){
+  const n = CARDS.filter(c => store.m[c[5]]).length;
+  $('#mastTxt').textContent = n + ' of ' + CARDS.length + ' mastered';
+  $('#mastBar').style.width = (100 * n / CARDS.length) + '%';
+}
+function start(ids, shuffle){
+  queue = ids.slice(); if (shuffle) for (let i = queue.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [queue[i], queue[j]] = [queue[j], queue[i]]; }
+  pos = 0; got = 0; again = 0; missed = []; history = [];
+  $('#done').hidden = true; $('#stage').parentElement.hidden = false;
+  if (!queue.length) { $('#stage').parentElement.hidden = true; $('#done').hidden = false; $('#doneTitle').textContent = 'Nothing left to study here'; $('#doneTxt').textContent = 'You have mastered every card in this deck. Untick \u201cOnly cards I have not mastered\u201d to review them all again.'; $('#redoMissed').hidden = true; return; }
+  show();
+}
+function show(){
+  if (pos >= queue.length) return finish();
+  const c = CARDS[queue[pos]];
+  const cd = $('#card'); cd.style.transition = 'none'; cd.classList.remove('flipped'); void cd.offsetWidth; cd.style.transition = '';
+  $('#fTag').textContent = $('#bTag').textContent = c[0];
+  $('#fType').textContent = $('#bType').textContent = c[1];
+  $('#fNo').textContent = '#' + c[5];
+  $('#fQ').textContent = c[2]; $('#bA').textContent = c[3];
+  $('#bP').innerHTML = '<b>Pearl:</b> '; $('#bP').append(document.createTextNode(c[4]));
+  $('#pos').textContent = 'Card ' + (pos + 1) + ' of ' + queue.length;
+  $('#cGot').textContent = got; $('#cAgain').textContent = again;
+  $('#progBar').style.width = (100 * pos / queue.length) + '%';
+  $('#prev').disabled = !history.length;
+  setFlip(false);
+}
+function setFlip(on){ $('#card').classList.toggle('flipped', on); $('#flip').textContent = on ? 'Show question' : 'Show answer'; }
+const flip = () => setFlip(!$('#card').classList.contains('flipped'));
+function rate(ok){
+  if (pos >= queue.length) return;
+  const id = mid(queue[pos]); history.push({ pos, ok, id, prev: store.m[id] });
+  store.m[id] = ok; save(); mastery();
+  if (ok) got++; else { again++; missed.push(queue[pos]); }
+  pos++; show();
+}
+function back(){
+  const h = history.pop(); if (!h) return;
+  if (h.skip) { pos = h.pos; return show(); }
+  if (h.ok) got--; else { again--; missed.pop(); }
+  store.m[h.id] = h.prev; save(); mastery(); pos = h.pos; show();
+}
+function skip(){ if (pos >= queue.length) return; history.push({ pos, skip: true }); pos++; show(); }
+function finish(){
+  $('#progBar').style.width = '100%';
+  $('#stage').parentElement.hidden = true; $('#done').hidden = false;
+  $('#doneTitle').textContent = again ? 'Round complete' : 'Deck cleared';
+  $('#doneTxt').textContent = 'You got ' + got + ' of ' + queue.length + ' right' + (again ? '. ' + again + (again === 1 ? ' card needs' : ' cards need') + ' another look.' : ' on the first try.');
+  $('#redoMissed').hidden = !missed.length;
+}
+$('#card').onclick = flip;
+$('#card').onkeydown = e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flip(); } };
+$('#flip').onclick = flip; $('#got').onclick = () => rate(true); $('#again').onclick = () => rate(false); $('#prev').onclick = back; $('#skip').onclick = skip;
+$('#redoMissed').onclick = () => start(missed);
+$('#restart').onclick = () => start(cardsIn(deck));
+$('#shuffle').onclick = () => start(cardsIn(deck), true);
+document.addEventListener('keydown', e => {
+  if ($('#study').hidden || e.target.matches('input')) return;
+  if (e.key === '1') rate(false); else if (e.key === '2') rate(true); else if (e.key === 'ArrowLeft') back(); else if (e.key === 'ArrowRight') skip();
+  else if (e.key === ' ' && e.target === document.body) { e.preventDefault(); flip(); }
+});
+let tx = null;
+$('#stage').addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+$('#stage').addEventListener('touchend', e => { if (tx === null) return; const dx = e.changedTouches[0].clientX - tx; tx = null;
+  if (Math.abs(dx) > 60 && $('#card').classList.contains('flipped')) rate(dx > 0); });
+function renderList(){
+  const term = $('#q').value.trim().toLowerCase();
+  const ids = cardsIn(deck).filter(i => !term || CARDS[i].join(' ').toLowerCase().includes(term));
+  $('#list').innerHTML = ids.length ? '' : '<p class="empty">No cards match that search in this deck.</p>';
+  ids.forEach(i => { const c = CARDS[i]; const d = document.createElement('details');
+    d.innerHTML = '<summary><span class="sq"></span>' + '<span class="cid">#' + c[5] + '</span>' + (store.m[c[5]] ? '<span class="st">Mastered</span>' : '') + '</summary><div class="body"><div class="meta"><span class="tag"></span><span class="type"></span></div><p class="a"></p><p class="pearl"><b>Pearl:</b> </p></div>';
+    d.querySelector('.sq').textContent = c[2]; d.querySelector('.tag').textContent = c[0]; d.querySelector('.type').textContent = c[1];
+    d.querySelector('.a').textContent = c[3]; d.querySelector('.pearl').append(document.createTextNode(c[4])); $('#list').append(d); });
+}
+$('#q').oninput = renderList;
+function mode(m){ $('#mStudy').setAttribute('aria-pressed', m === 'study'); $('#mBrowse').setAttribute('aria-pressed', m === 'browse'); $('#study').hidden = m !== 'study'; $('#browse').hidden = m !== 'browse'; if (m === 'browse') renderList(); }
+$('#mStudy').onclick = () => mode('study'); $('#mBrowse').onclick = () => mode('browse');
+renderDecks(); mastery(); start(cardsIn(deck));
+try { if (store.howto === false) $('#howto').open = false; } catch (e) {}
+$('#howto').addEventListener('toggle', () => { store.howto = $('#howto').open; save(); });
+</script>
+</body>
+</html>
